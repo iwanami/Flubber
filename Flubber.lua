@@ -36,7 +36,7 @@ function new(elasticity, stable_distance, flub)
                         Stable_Distance = stable_distance,
                         Compression     = -(Stable_Distance^2 * Elasticity),}
   return setmetatable(self, lib)
-end
+end --new]]
 
 --appel du constructeur new par l'intermediaire du nom de classe
 setmetatable(lib, {__call = function(lib, ...) return new(...) end})
@@ -48,21 +48,21 @@ lib.__index = lib
 function addVertex(vertex)
   table.insert(self.vertex_list, vertex)
   self.edge_matrix[#self.vertex_list] = {}
-end
+end --addVertex]]
 
 --===================================================================================================================
 --met a jour les listes de Vertices et d'Edges
 --===================================================================================================================
 function update(time)
   
-end
+end --update]]
 
 --===================================================================================================================
 --dessine le Flubber a partir des listes de Vertices et d'Edges
 --===================================================================================================================
 function draw()
   
-end
+end --draw]]
 
 --===================================================================================================================
 --Met a jour la liste des Edges
@@ -71,7 +71,7 @@ local function computeEdges()
   for i, e in ipairs(self.edge_list) do
     e:updateSegments(self.Elasticity, self.Compression)
   end
-end
+end --computeEdges]]
 
 --===================================================================================================================
 --met a jour les forces
@@ -80,7 +80,7 @@ local function computeForces()
   for i, v in ipairs(self.vertex_list) do
     v:computeForce()
   end
-end
+end --computeForces]]
 
 --===================================================================================================================
 --Deplace les Vertices en fonction des influences precedentes
@@ -92,11 +92,11 @@ local function moveVertices(time)
     end
   end
   self.last_time = current_time
-end
+end --moveVertices]]
 
 --===================================================================================================================
 --determine les edges de la face infinie du graphe representant le flubber
 --===================================================================================================================
 local function computeShape()
   
-end
+end --computeShape]]

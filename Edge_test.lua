@@ -20,7 +20,7 @@ function makeEdges()
   local e1 = Edge{a_segment = Segment(), 
                   b_segment = Segment(),
                   a_vertex = vert1,
-                  b_vertex = vert2}
+                  b_vertex = vert2}--]]
   return e1
 end
 

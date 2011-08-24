@@ -19,7 +19,7 @@ local function new(vect)
   local self = vect or {0, 0}
   setmetatable(self, lib)
   return self
-end
+end --new]]
 
 --appel du constructeur new par l'intermediaire du nom de classe
 setmetatable(lib, {__call = function(lib, ...) return new(...) end})
@@ -31,7 +31,7 @@ function add(self, b)
   return new{self[1]+b[1],
              self[2]+b[2],
   }
-end
+end --add]]
 
 --===================================================================================================================
 --soustrait les deux vecteurs et renvoie le resultat
@@ -41,7 +41,7 @@ function sub(self, b)
     self[1]-b[1],
     self[2]-b[2]
   }
-end
+end --sub]]
 
 --===================================================================================================================
 --multiplie le vecteur par la valeur fournie et renvoie le resultat
@@ -50,7 +50,7 @@ function mult(self, lambda)
   return new{self[1]*lambda,
              self[2]*lambda,
   }
-end
+end --mult]]
 
 --===================================================================================================================
 --additionne les deux vecteurs et renvoie le resultat
@@ -59,7 +59,7 @@ function negate(self)
   return new{-self[1],
              -self[2],
   }
-end
+end --negate]]
 
 --===================================================================================================================
 --surcharge des operateurs +, - (binaire), *, - (unaire) pour le calcul vectoriel
@@ -74,14 +74,14 @@ __unm = negate
 --===================================================================================================================
 function isNull(self)
   return self[1] == 0 and self[1] == 0
-end
+end --isNull]]
 
 --===================================================================================================================
 --calcule la norme d'un vecteur
 --===================================================================================================================
 function norm(self)
   return sqrt(self[1]^2+self[2]^2)
-end        
+end --norm]]    
 
 --===================================================================================================================
 --transforme un vecteur en ses coordonnees polaires: rho pour la norme, theta pour l'angle
@@ -90,7 +90,7 @@ function toPolar(self)
   local rho = self:norm()
   local theta = atan2(self[2],self[1])
   return rho, theta
-end
+end --toPolar]]
 
 --===================================================================================================================
 --augmente le vecteur par celui passe en parametre 
@@ -98,7 +98,7 @@ end
 function addToSelf(self, b)
   self[1] = self[1]+b[1]
   self[2] = self[2]+b[2]
-end
+end --addToSelf]]
 
 --===================================================================================================================
 --diminue le vecteur par celui passe en parametre
@@ -106,7 +106,7 @@ end
 function subToSelf(self, b)
   self[1] = self[1]-b[1]
   self[2] = self[2]-b[2]
-end
+end --subToSelf]]
 
 --===================================================================================================================
 --multiplie le vecteur par celui passe en parametre
@@ -114,7 +114,7 @@ end
 function multToSelf(self, lambda)
   self[1] = self[1]*lambda
   self[2] = self[2]*lambda
-end
+end --multToSelf]]
 
 --===================================================================================================================
 --inverse le signe des composantes du vecteur
@@ -122,8 +122,11 @@ end
 function negateSelf(self)
   self[1] = -self[1]
   self[2] = -self[2]
-end
+end --negateSelf]]
 
+--===================================================================================================================
+--renvoie un string contenant les valeurs d'un vecteur sous la forme "(x, y)"
+--===================================================================================================================
 function __tostring(self)
   return '('..self[1]..', '..self[2]..')'
-end
+end --__tostring]]

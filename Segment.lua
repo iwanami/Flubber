@@ -30,7 +30,7 @@ local function new(seg)
                        theta         = 0,
                        force         = Vector(),}
   return setmetatable(self, lib)
-end
+end--new]]
 
 --appel du constructeur new par l'intermediaire du nom de classe
 setmetatable(lib, {__call = function(lib, ...) return new(...) end})
@@ -41,4 +41,4 @@ lib.__index = lib
 --===================================================================================================================
 function computeForce(self)
   self.norm, self.theta = self.force:toPolar()
-end
+end--computeForce]]

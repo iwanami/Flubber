@@ -25,7 +25,9 @@ function makeSegment()
                     norm          = 0,
                     theta         = 0,
                     force         = Vector{0, 1},}
-                    
+  s1:computeForce()
+  s2:computeForce() 
+  s3:computeForce() 
   return s1, s2, s3
 end
 
@@ -36,9 +38,9 @@ function makeVertex()
                     mu_frottement = -0.2,
                     mass          = 0.2,}
   local s1, s2, s3 = makeSegment()
-  table.insert(v1, s1)
   table.insert(v1, s2)
   table.insert(v1, s3)
+  table.insert(v1, s1)
   return v1
 end
 
@@ -76,5 +78,17 @@ function should.move2()
   assertValueEqual({55, -10}, v.speed)
 end
 
+function should.sort()
+  local v1 = makeVertex()
+  v1:sortSegments(function(a,b) return a.theta > b.theta end)
+  result = {-0.55859931534356, 0.58800260354757, 1.5707963267949}
+  --s1: rho = 9.4339811320566, theta = -0.55859931534356
+  --s2: rho = 3.605551275464, theta = 0.58800260354757
+  --s3: rho = 1, theta = 1.5707963267949
+  print("sorted?")
+  for i, s in ipairs(v1) do
+    assertEqual(s.theta, result[i], 0.000001)
+  end
+end
 
 test.all()

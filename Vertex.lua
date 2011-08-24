@@ -27,7 +27,7 @@ local function new(vx)
                       mu_frottement = -0.2,
                       mass          = 0.2,}
   return setmetatable(self, lib)
-end
+end --new]]
 
 --appel du constructeur new par l'intermediaire du nom de classe
 setmetatable(lib, {__call = function(lib, ...) return new(...) end})
@@ -36,9 +36,20 @@ lib.__index = lib
 --===================================================================================================================
 --trie les segments afin de pouvoir les parcourir correctement lors de la recherche de la forme du flubber
 --===================================================================================================================
-function sortSegments(self)
-  
-end
+function sortSegments(self, condition)
+  local n = #self
+  local new_n
+  repeat
+    new_n = 0
+    for i = 1, n-1 do
+      if condition(self[i], self[i+1]) then
+        self[i], self[i+1] = self[i+1], self[i]
+        new_n = i+1
+      end
+    end
+    n = new_n
+  until n < 1
+end --sortSegments]]
 
 --===================================================================================================================
 --deplace le vertex en fonction de la force qui s'applique dessus
@@ -50,7 +61,7 @@ function move(self, delta_t)
   self.position:addToSelf(self.speed*delta_t+(a*(0.5*delta_t^2)))
   -- V = Vo + a* t
   self.speed:addToSelf(a*delta_t)
-end
+end --move]]
 
 --===================================================================================================================
 --calcule la force resultante s'appliquant sur le vertex
@@ -64,4 +75,4 @@ function computeForce(self)
   -- ajout de la force de frottement
   result:addToSelf(self.speed*self.mu_frottement)
   self.force = result
-end
+end --computeForce]]

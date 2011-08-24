@@ -23,29 +23,32 @@ setfenv(1, lib)
 function new(edge)
   local self = edge or {a_segment = Segment(),
                         b_segment = Segment(),
-                        a_vertex    = Vertex(),
-                        b_vertex    = Vertex(),}
+                        a_vertex  = Vertex(),
+                        b_vertex  = Vertex(),}
   setmetatable(self, lib)
-  --setmetatable(self.a_vertex,  {__mode = "v"})
-  --setmetatable(self.b_vertex,  {__mode = "v"})
-  --setmetatable(self.a_segment, {__mode = "v"})
-  --setmetatable(self.b_segment, {__mode = "v"})
+  setmetatable(self.a_vertex,  {__mode = "v"})
+  setmetatable(self.b_vertex,  {__mode = "v"})
+  setmetatable(self.a_segment, {__mode = "v"})
+  setmetatable(self.b_segment, {__mode = "v"})
   return self
-end
+end --new]]
 
 --appel du constructeur new par l'intermediaire du nom de classe
 setmetatable(lib, {__call = function(lib, ...) return new(...) end})
 lib.__index = lib
 
---===================================================================================================================
+--[[===================================================================================================================
 --cree un nouvel objet Edge (une arete entre deux noeuds) a partir des deux vertex fournis en parametre. 
 --les segments sont mis a jour pour correspondre aux vertices fournis
 --===================================================================================================================
 function newFromVertices(self, a, b)
-  local e = new{Segment(), Segment(), a, b}
+  local e = new{a_segment = Segment(), 
+                b_segment = Segment(),
+                a_vertex = a,
+                b_vertex = b,}
   --e:updateSegments()
   return e
-end
+end --newFromVertices]]
 
 --===================================================================================================================
 --met a jour les segments de force de l'arete
@@ -64,4 +67,4 @@ function updateSegments(self, elasticity, compression)
   
   self.b_segment.force = f
   self.b_segment.norm = f_norm
-end
+end --updateSegments]]
