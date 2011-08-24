@@ -29,7 +29,6 @@ function should.updateSegments()
   e:updateSegments(Elasticity, Compression)
   assertValueEqual({264.06, -88.02}, e.a_segment.force, 0.00001)
   assertValueEqual({-264.06, 88.02}, e.b_segment.force, 0.00001)
-  assertInRange(278.3436, 278.3437, e.a_segment.norm, 0.00001)
 end
 
 test.all()

@@ -55,7 +55,6 @@ function updateSegments(self, elasticity, compression)
   local v1 = self.b_vertex.position - self.a_vertex.position
   --calcul de la longueur de l'edge
   local norm = v1:norm()
-  print(v1, elasticity + (compression / norm^2))
   --calcul de la force s'appliquant sur les vertices
   local f = v1*(elasticity + (compression / norm^2))
   local f_norm = f:norm()
@@ -63,6 +62,6 @@ function updateSegments(self, elasticity, compression)
   self.a_segment.force = -f
   self.a_segment.norm = f_norm
   
-  self.b_segment.force.x = f
+  self.b_segment.force = f
   self.b_segment.norm = f_norm
 end
