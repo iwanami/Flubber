@@ -3,7 +3,8 @@ local lib = {}
 --nommage de la classe
 Vector    = lib
 --copie locale des fonctions standard utilisees
-local tan = math.tan
+local tan          = math.tan
+local sqrt         = math.sqrt
 local setmetatable = setmetatable
 --parametrage de l'environnement
 setfenv(-1, lib)
@@ -48,7 +49,7 @@ function negate()
 end
 
 --===================================================================================================================
---surcharge des operateurs +, - (binaire), *, - (unaire)
+--surcharge des operateurs +, - (binaire), *, - (unaire) pour le calcul vectoriel
 --===================================================================================================================
 __add = add
 __sub = sub
@@ -56,10 +57,17 @@ __mul = mult
 __unm = negate
 
 --===================================================================================================================
+--indique si le vecteur est le vecteur nul (0, 0)
+--===================================================================================================================
+function isNull()
+  return self.x == 0 and self.y == 0
+end
+
+--===================================================================================================================
 --calcule la norme d'un vecteur
 --===================================================================================================================
 function norm()
-  return math.sqrt(self.x^2+self.y^2)
+  return sqrt(self.x^2+self.y^2)
 end        
 
 --===================================================================================================================
@@ -67,7 +75,7 @@ end
 --===================================================================================================================
 function toPolar()
   local rho = self:norm()
-  local theta = math.tan(self.y/self.x)
+  local theta = tan(self.y/self.x)
   return rho, theta
 end
 

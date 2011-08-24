@@ -1,3 +1,6 @@
+require 'Vertex'
+require 'Vector'
+
 --creation de la classe 'anonyme'
 local lib = {}
 --nommage de la classe
@@ -17,12 +20,13 @@ setfenv(-1, lib)
 --          - la force representee par le segment
 --===================================================================================================================
 function new(seg)
-  local self = seg or {source_index = 0,
-                    target_index = 0,
-                    target_vertex = Vertex:new(),
-                    norm = 0,
-                    theta = 0,
-                    force = Vector:new(),}
+  local self = seg or {source_index  = 0,
+                       --source_vertex = Vertex:new()
+                       target_index  = 0,
+                       target_vertex = Vertex:new(),
+                       norm          = 0,
+                       theta         = 0,
+                       force         = Vector:new(),}
   return setmetatable(self, lib)
 end
 
@@ -30,5 +34,5 @@ end
 --calcule la force representee par le segment
 --===================================================================================================================
 function computeForce()
-  
+  self.norm, self.theta = self.force:toPolar()
 end
