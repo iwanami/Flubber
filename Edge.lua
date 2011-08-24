@@ -35,7 +35,7 @@ end
 --===================================================================================================================
 function newFromVertices(a, b)
   local e = new{Segment:new(), Segment:new(), a, b}
-  e:updateSegments()
+  --e:updateSegments()
   return e
 end
 
