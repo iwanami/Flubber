@@ -8,8 +8,12 @@ local lib = {}
 Edge      = lib
 --copie locale des fonctions standard utilisees
 local setmetatable = setmetatable
+local Segment = Segment
+local Vertex = Vertex
+local Vector = Vector
+local print = print
 --parametrage de l'environnement
-setfenv(-1, lib)
+setfenv(1, lib)
 
 --===================================================================================================================
 --cree un nouvel objet Edge (une arete entre deux noeuds)
@@ -17,24 +21,28 @@ setfenv(-1, lib)
 --          - les segments de force associes aux sommets
 --===================================================================================================================
 function new(edge)
-  local self = edge or {e.a_segment = Segment:new(),
-                        e.b_segment = Segment:new(),
-                        a_vertex    = Vertex:new(),
-                        b_vertex    = Vertex:new(),}
+  local self = edge or {a_segment = Segment(),
+                        b_segment = Segment(),
+                        a_vertex    = Vertex(),
+                        b_vertex    = Vertex(),}
   setmetatable(self, lib)
-  setmetatable(self.a_vertex,  {__mode = "v"})
-  setmetatable(self.b_vertex,  {__mode = "v"})
-  setmetatable(self.a_segment, {__mode = "v"})
-  setmetatable(self.b_segment, {__mode = "v"})
+  --setmetatable(self.a_vertex,  {__mode = "v"})
+  --setmetatable(self.b_vertex,  {__mode = "v"})
+  --setmetatable(self.a_segment, {__mode = "v"})
+  --setmetatable(self.b_segment, {__mode = "v"})
   return self
 end
+
+--appel du constructeur new par l'intermediaire du nom de classe
+setmetatable(lib, {__call = function(lib, ...) return new(...) end})
+lib.__index = lib
 
 --===================================================================================================================
 --cree un nouvel objet Edge (une arete entre deux noeuds) a partir des deux vertex fournis en parametre. 
 --les segments sont mis a jour pour correspondre aux vertices fournis
 --===================================================================================================================
-function newFromVertices(a, b)
-  local e = new{Segment:new(), Segment:new(), a, b}
+function newFromVertices(self, a, b)
+  local e = new{Segment(), Segment(), a, b}
   --e:updateSegments()
   return e
 end
@@ -42,17 +50,19 @@ end
 --===================================================================================================================
 --met a jour les segments de force de l'arete
 --===================================================================================================================
-function updateSegments(elasticity, compression)
+function updateSegments(self, elasticity, compression)
   --calcul du vecteur de l'edge
   local v1 = self.b_vertex.position - self.a_vertex.position
   --calcul de la longueur de l'edge
   local norm = v1:norm()
+  print(v1, elasticity + (compression / norm^2))
   --calcul de la force s'appliquant sur les vertices
-  local f = v1*(elasticity + compression / (norm*norm))
+  local f = v1*(elasticity + (compression / norm^2))
+  local f_norm = f:norm()
 
-  self.a_segment.force = f
-  self.a_segment.norm = norm
+  self.a_segment.force = -f
+  self.a_segment.norm = f_norm
   
-  self.b_segment.force.x = -f
-  self.b_segment.norm = norm
+  self.b_segment.force.x = f
+  self.b_segment.norm = f_norm
 end

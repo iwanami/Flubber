@@ -7,8 +7,10 @@ local lib = {}
 Segment    = lib
 --copie locale des fonctions standard utilisees
 local setmetatable = setmetatable
+local Vector = Vector
+local Vertex = Vertex
 --parametrage de l'environnement
-setfenv(-1, lib)
+setfenv(1, lib)
 
 --===================================================================================================================
 --cree un nouvel objet Segment
@@ -19,20 +21,24 @@ setfenv(-1, lib)
 --          - l'angle de la coordonnee polaire de la force representee par le segment
 --          - la force representee par le segment
 --===================================================================================================================
-function new(seg)
+local function new(seg)
   local self = seg or {source_index  = 0,
-                       --source_vertex = Vertex:new()
+                       --source_vertex = Vertex()
                        target_index  = 0,
-                       target_vertex = Vertex:new(),
+                       target_vertex = Vertex(),
                        norm          = 0,
                        theta         = 0,
-                       force         = Vector:new(),}
+                       force         = Vector(),}
   return setmetatable(self, lib)
 end
+
+--appel du constructeur new par l'intermediaire du nom de classe
+setmetatable(lib, {__call = function(lib, ...) return new(...) end})
+lib.__index = lib
 
 --===================================================================================================================
 --calcule la force representee par le segment
 --===================================================================================================================
-function computeForce()
+function computeForce(self)
   self.norm, self.theta = self.force:toPolar()
 end

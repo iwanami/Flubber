@@ -7,8 +7,9 @@ Vertex    = lib
 --copie locale des fonctions standard utilisees
 local setmetatable = setmetatable
 local ipairs       = ipairs
+local Vector       = Vector
 --parametrage de l'environnement
-setfenv(-1, lib)
+setfenv(1, lib)
 
 
 --===================================================================================================================
@@ -19,26 +20,30 @@ setfenv(-1, lib)
 --          - une liste de segments
 --remarques: le vertex lui-meme est la liste de segments. ils seront donc indices comme d'habitude dans lua
 --===================================================================================================================
-function new(vx)
-  local self = vx or {position      = Vector:new(),
-                      force         = Vector:new(),
-                      speed         = Vector:new(),
+local function new(vx)
+  local self = vx or {position      = Vector(),
+                      force         = Vector(),
+                      speed         = Vector(),
                       mu_frottement = -0.2,
                       mass          = 0.2,}
   return setmetatable(self, lib)
 end
 
+--appel du constructeur new par l'intermediaire du nom de classe
+setmetatable(lib, {__call = function(lib, ...) return new(...) end})
+lib.__index = lib
+
 --===================================================================================================================
 --trie les segments afin de pouvoir les parcourir correctement lors de la recherche de la forme du flubber
 --===================================================================================================================
-function sortSegments()
+function sortSegments(self)
   
 end
 
 --===================================================================================================================
 --deplace le vertex en fonction de la force qui s'applique dessus
 --===================================================================================================================
-function move(delta_t)
+function move(self, delta_t)
   -- a = F/m
   local a = self.force*(1/self.mass)
   -- X = Xo + Vo * t + 1/2 a t^2
@@ -50,8 +55,8 @@ end
 --===================================================================================================================
 --calcule la force resultante s'appliquant sur le vertex
 --===================================================================================================================
-function computeForce()
-  local result = Vector:new()
+function computeForce(self)
+  local result = Vector()
   --vecteur force resultant
   for i, s in ipairs(self) do
     result:addToSelf(s.force)

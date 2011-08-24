@@ -12,7 +12,7 @@ local setmetatable = setmetatable
 local ipairs = ipairs
 local table.insert = table.insert
 --parametrage de l'environnement
-setfenv(-1, lib)
+setfenv(1, lib)
 
 --===================================================================================================================
 --cree un nouvel objet Flubber
@@ -37,6 +37,10 @@ function new(elasticity, stable_distance, flub)
                         Compression     = -(Stable_Distance^2 * Elasticity),}
   return setmetatable(self, lib)
 end
+
+--appel du constructeur new par l'intermediaire du nom de classe
+setmetatable(lib, {__call = function(lib, ...) return new(...) end})
+lib.__index = lib
 
 --===================================================================================================================
 --ajoute un vertex a la liste deja presente et augmente la matrice d'edges
