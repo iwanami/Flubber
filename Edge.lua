@@ -9,6 +9,7 @@ Edge      = lib
 --copie locale des fonctions standard utilisees
 local setmetatable = setmetatable
 local insert = table.insert
+local remove = table.remove
 local Segment = Segment
 local Vertex = Vertex
 local Vector = Vector
@@ -40,6 +41,9 @@ setmetatable(lib, {__call = function(lib, ...) return new(...) end})
 lib.__index = lib
 
 
+
+
+
 --===================================================================================================================
 --met a jour les segments de force de l'arete
 --===================================================================================================================
@@ -50,35 +54,11 @@ function updateSegments(self, elasticity, compression)
   local norm = v1:norm()
   --calcul de la force s'appliquant sur les vertices
   local f = v1*(elasticity + (compression / norm^2))
-  local f_norm = f:norm()
   
   self.a_segment.force = -f
-  self.a_segment.norm = f_norm
   self.a_segment:computeForce()
   
-  local exists = false
-  
-  for i, s in ipairs(self.a_vertex) do
-    if self.a_segment == s then 
-      exists = true
-      break
-    end
-  end
-  
-  if not exists then insert(self.a_vertex, self.a_segment) end
-  
   self.b_segment.force = f
-  self.b_segment.norm = f_norm
   self.b_segment:computeForce()
   
-  exists = false
-  
-  for i, s in ipairs(self.a_vertex) do
-    if self.b_segment == s then 
-      exists = true
-      break
-    end
-  end
-  
-  if not exists then insert(self.b_vertex, self.b_segment) end
 end --updateSegments]]

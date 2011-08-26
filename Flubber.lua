@@ -2,6 +2,7 @@ require 'Edge'
 require 'Vertex'
 require 'Vector'
 require 'Segment'
+require 'util'
 
 --creation de la classe 'anonyme'
 local lib = {}
@@ -17,6 +18,7 @@ local Vector = Vector
 local Vertex = Vertex
 local worker = worker
 local print = print
+local removeIfExists = removeIfExists
 --parametrage de l'environnement
 setfenv(1, lib)
 
@@ -98,17 +100,15 @@ function computeEdges(self)
       if  norm <= self.Glue and not edge then
         edge = Edge{a_vertex = vertex, b_vertex = other_vertex}
         insert(self.edge_list, edge)
+        insert(vertex, edge.a_segment)
+        insert(other_vertex, edge.b_segment)
         row[j] = edge
         --si la norme est plus grande que le seuil de rupture, on supprime le lien
       elseif norm > self.Cut and edge then
         row[j] = nil
-        for k,l in ipairs(self.edge_list) do
-          if l == edge then
-            remove(self.edge_list, k)
-            --edge:unedge() -- remove force from nodes
-            break
-          end
-        end
+        removeIfExists(self.edge_list, edge)
+        removeIfExists(vertex, edge.a_segment)
+        removeIfExists(other_vertex, edge.b_segment)
         edge = nil
       end
       if edge then
