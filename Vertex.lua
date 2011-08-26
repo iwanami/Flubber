@@ -48,6 +48,8 @@ function sortSegments(self, condition)
     for i = 1, n-1 do
       if condition(self[i], self[i+1]) then
         self[i], self[i+1] = self[i+1], self[i]
+        self[i].source_index = i
+        self[i+1].source_index = i+1
         new_n = i+1
       end
     end

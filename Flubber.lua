@@ -40,15 +40,16 @@ setfenv(1, lib)
 --===================================================================================================================
 function new(elasticity, stable_distance, glue, cut, opts)
   local opts = opts or {}
-  local self = {vertex_list     = opts.vertex_list or {},
-               edge_list       = opts.edge_list or {},
-               edge_matrix     = opts.edge_matrix or {},
-               last_time       = opts.last_time or nil,
-               Elasticity      = elasticity,
-               Stable_Distance = stable_distance,
-               Compression     = -(stable_distance^2 * elasticity),
-               Glue            = glue,
-               Cut             = cut,}
+  local self = {vertex_list    = opts.vertex_list or {},
+                edge_list       = opts.edge_list or {},
+                edge_matrix     = opts.edge_matrix or {},
+                segment_list    = opts.segment_list or {},
+                last_time       = opts.last_time or nil,
+                Elasticity      = elasticity,
+                Stable_Distance = stable_distance,
+                Compression     = -(stable_distance^2 * elasticity),
+                Glue            = glue,
+                Cut             = cut,}
   return setmetatable(self, lib)
 end --new]]
 
@@ -102,6 +103,8 @@ function computeEdges(self)
         insert(self.edge_list, edge)
         insert(vertex, edge.a_segment)
         insert(other_vertex, edge.b_segment)
+        insert(self.segment_list, edge.a_segment)
+        insert(self.segment_list, edge.b_segment)
         row[j] = edge
         --si la norme est plus grande que le seuil de rupture, on supprime le lien
       elseif norm > self.Cut and edge then
@@ -141,10 +144,28 @@ local function moveVertices(self, time)
 end --moveVertices]]
 
 --===================================================================================================================
+--trie les segments de tous les vertex de la liste
+--===================================================================================================================
+local function sortAllSegments(self)
+  for i, v in ipairs(self.vertex_list) do
+    v:sortSegments(function(a,b) return a.theta > b.theta end)
+  end
+end
+
+--===================================================================================================================
 --determine les edges de la face infinie du graphe representant le flubber
 --===================================================================================================================
 local function computeShape(self)
-  
+  sortAllSegments(self)
+  local shape = {}
+  local current_seg = self.segment_list[1]
+  while current_seg ~= self.segment_list[1] do
+    local target = current_seg.target_segment
+    insert(shape, target.source_vertex)
+    local next_index = (target.source_index+1)%#target.source_vertex
+    current_seg = target.source_vertex[next_index]
+  end
+  return shape
 end --computeShape]]
 
 

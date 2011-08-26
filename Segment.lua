@@ -26,13 +26,12 @@ setfenv(1, lib)
 --===================================================================================================================
 local function new(opts)
   local opts = opts or {}
-  local self = {source_index  = opts.source_index or 0,
-                --source_vertex = opts.source_vertex or Vertex()
-                target_index  = opts.target_index or 0,
-                target_vertex = opts.target_vertex or Vertex(),
-                norm          = opts.norm or 0,
-                theta         = opts.theta or 0,
-                force         = opts.force or Vector(),}
+  local self = {source_index   = opts.source_index or 0,
+                source_vertex  = opts.source_vertex or Vertex(),
+                target_segment = opts.target_segment or Segment(),
+                norm           = opts.norm or 0,
+                theta          = opts.theta or 0,
+                force          = opts.force or Vector(),}
   setmetatable(self, lib)
   return self
 end--new]]

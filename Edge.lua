@@ -57,8 +57,12 @@ function updateSegments(self, elasticity, compression)
   
   self.a_segment.force = -f
   self.a_segment:computeForce()
+  if self.a_segment.source_vertex ~= self.a_vertex then self.a_segment.source_vertex = self.a_vertex end
   
   self.b_segment.force = f
   self.b_segment:computeForce()
+  if self.b_segment.source_vertex ~= self.b_vertex then self.b_segment.source_vertex = self.b_vertex end
+  
+  self.a_segment.target_segment, self.b_segment.target_segment = self.b_segment, self.a_segment
   
 end --updateSegments]]
