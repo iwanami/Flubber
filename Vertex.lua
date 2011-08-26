@@ -8,6 +8,7 @@ Vertex    = lib
 local setmetatable = setmetatable
 local ipairs       = ipairs
 local Vector       = Vector
+local print = print
 --parametrage de l'environnement
 setfenv(1, lib)
 
@@ -78,4 +79,5 @@ function computeForce(self)
   -- ajout de la force de frottement
   result:addToSelf(self.speed*self.mu_frottement)
   self.force = result
+  print(result)
 end --computeForce]]

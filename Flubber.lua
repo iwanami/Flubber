@@ -16,6 +16,7 @@ local Edge = Edge
 local Vector = Vector
 local Vertex = Vertex
 local worker = worker
+local print = print
 --parametrage de l'environnement
 setfenv(1, lib)
 
@@ -36,11 +37,11 @@ setfenv(1, lib)
 --             attribuees
 --===================================================================================================================
 function new(elasticity, stable_distance, glue, cut, opts)
-  local opts or {}
+  local opts = opts or {}
   local self = {vertex_list     = opts.vertex_list or {},
                edge_list       = opts.edge_list or {},
                edge_matrix     = opts.edge_matrix or {},
-               last_time       = opts.last time or nil,
+               last_time       = opts.last_time or nil,
                Elasticity      = elasticity,
                Stable_Distance = stable_distance,
                Compression     = -(stable_distance^2 * elasticity),
@@ -95,7 +96,7 @@ function computeEdges(self)
       local norm = vect:norm()
       --si la norme du vecteur est dans la portee de la distance de connection, on ajoute un nouveau lien a la table
       if  norm <= self.Glue and not edge then
-        edge = Edge:newFromVertices(vertex, other_vertex)
+        edge = Edge{a_vertex = vertex, b_vertex = other_vertex}
         insert(self.edge_list, edge)
         row[j] = edge
         --si la norme est plus grande que le seuil de rupture, on supprime le lien
@@ -110,7 +111,7 @@ function computeEdges(self)
         end
         edge = nil
       end
-      if edge then 
+      if edge then
         edge:updateSegments(self.Elasticity, self.Compression)
       end
     end

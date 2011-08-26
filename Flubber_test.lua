@@ -129,16 +129,16 @@ function win.paint(p, w, h)
     --end
     
     --dessin des forces
-    --for j, seg in ipairs(vertex) do
-      --forces:moveTo(vertex.position[1], vertex.position[2])
-      --forces:lineTo(seg.target_vertex.position[1], seg.target_vertex.position[2])
-    --end
+    for j, seg in ipairs(vertex) do
+      forces:moveTo(vertex.position[1], vertex.position[2])
+      forces:lineTo(vertex.position[1]+seg.force[1], vertex.position[2]+seg.force[2])
+    end
   end
 
   p:setPen(2, 1)
 	p:drawPath(path)
-	--p:setPen(2, 0.1)
-	--p:drawPath(forces)
+	p:setPen(2, 0.1)
+	p:drawPath(forces)
 	win:update()
 end
 
