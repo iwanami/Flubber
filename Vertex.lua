@@ -18,14 +18,17 @@ setfenv(1, lib)
 --          - la force resultante sur le vertex
 --          - la vitesse du vertex. utilise pour la force resultante
 --          - une liste de segments
---remarques: le vertex lui-meme est la liste de segments. ils seront donc indices comme d'habitude dans lua
+--remarques: - le vertex lui-meme est la liste de segments. ils seront donc indices comme d'habitude dans lua
+--           - les arguments doivent etre passes par noms. s'il ne sont pas renseignes, des valeurs par defaut sont 
+--             attribuees
 --===================================================================================================================
-local function new(vx)
-  local self = vx or {position      = Vector(),
-                      force         = Vector(),
-                      speed         = Vector(),
-                      mu_frottement = -0.2,
-                      mass          = 0.2,}
+local function new(opts)
+  local opts = opts or {}
+  local self = {position      = opts.position or Vector(),
+                force         = opts.force or Vector(),
+                speed         = opts.speed or Vector(),
+                mu_frottement = opts.mu_frottement or -0.2,
+                mass          = opts.mass or 0.2,}
   return setmetatable(self, lib)
 end --new]]
 

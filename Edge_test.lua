@@ -21,6 +21,8 @@ function makeEdges()
                   b_segment = Segment(),
                   a_vertex = vert1,
                   b_vertex = vert2}--]]
+  
+  print(e1.a_segment, e1.a_segment.computeForce)
   return e1
 end
 

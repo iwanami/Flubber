@@ -8,12 +8,15 @@ local sqrt         = math.sqrt
 local setmetatable = setmetatable
 --parametrage de l'environnement
 setfenv(1, lib)
+
 --===================================================================================================================
 --cree un nouvel objet Vector
 --contient: - la valeur selon l'axe x avec comme cle 1
 --          - la valeur selon l'axe y avec comme cle 2
 --remarques: - on peut utiliser Vector comme un point du plan en utilisant les composantes comme des coordonnes
 --           - le vecteur est nul s'il n'est pas reseigne a la creation
+--           - les arguments doivent etre passes par noms. s'il ne sont pas renseignes, des valeurs par defaut sont 
+--             attribuees
 --===================================================================================================================
 local function new(vect)
   local self = vect or {0, 0}
@@ -24,6 +27,14 @@ end --new]]
 --appel du constructeur new par l'intermediaire du nom de classe
 setmetatable(lib, {__call = function(lib, ...) return new(...) end})
 lib.__index = lib
+
+--===================================================================================================================
+--cree un nouvel objet Vector a partir des positions des Vertex fournis en parametre
+--===================================================================================================================
+function newFromVertices(v1, v2)
+  return v2.position-v1.position
+end --newFromVertices]]
+
 --===================================================================================================================
 --additionne les deux vecteurs et renvoie le resultat
 --===================================================================================================================
