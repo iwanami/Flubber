@@ -19,6 +19,7 @@ local Vertex = Vertex
 local worker = worker
 local print = print
 local removeIfExists = removeIfExists
+local pi = math.pi
 --parametrage de l'environnement
 setfenv(1, lib)
 
@@ -112,6 +113,8 @@ function computeEdges(self)
         removeIfExists(self.edge_list, edge)
         removeIfExists(vertex, edge.a_segment)
         removeIfExists(other_vertex, edge.b_segment)
+        removeIfExists(self.segment_list, edge.a_segment)
+        removeIfExists(self.segment_list, edge.b_segment)
         edge = nil
       end
       if edge then
@@ -155,18 +158,49 @@ end
 --===================================================================================================================
 --determine les edges de la face infinie du graphe representant le flubber
 --===================================================================================================================
-local function computeShape(self)
-  sortAllSegments(self)
-  local shape = {}
-  local current_seg = self.segment_list[1]
-  while current_seg ~= self.segment_list[1] do
-    local target = current_seg.target_segment
-    insert(shape, target.source_vertex)
-    local next_index = (target.source_index+1)%#target.source_vertex
-    current_seg = target.source_vertex[next_index]
+function tryShape(segment, mark)
+  local current = segment
+  local count = 0
+  while true do
+    current = current:nextSegment()
+    if not current or current == segment then
+      break
+    else
+      current.mark = mark
+      count = count + 1
+    end
   end
-  return shape
+  print(count)
+  return count
 end --computeShape]]
+
+
+--===================================================================================================================
+--determine les edges de la face infinie du graphe representant le flubber
+--===================================================================================================================
+function computeOuterShape(self)
+  sortAllSegments(self)
+  for i, v in ipairs(self.vertex_list) do
+    print('vertex:',v , v.position)
+    for j, s in ipairs(v) do
+      print('target:', s.target_segment.source_vertex.position, 'angle:', s.theta/pi..' π')
+    end
+  end
+  local max_count = 0
+  local result
+  local mark = worker:now()
+  for i, segment in ipairs(self.segment_list) do
+    print(i)
+    if segment.mark ~= mark then
+      local count = tryShape(segment, mark)
+      if count > max_count then
+        max_count = count
+        result = segment
+      end
+    end
+  end
+  return result
+end
 
 
 --===================================================================================================================

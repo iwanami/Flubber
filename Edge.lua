@@ -32,6 +32,9 @@ function new(opts)
                 b_segment = opts.b_segment or Segment(),
                 a_vertex  = opts.a_vertex or Vertex(),
                 b_vertex  = opts.b_vertex or Vertex(),}
+  self.a_segment.target_segment = self.b_segment
+  self.b_segment.target_segment = self.a_segment
+  print(self.a_vertex, '<----->', self.b_vertex)
   setmetatable(self, lib)
   return self
 end --new]]
@@ -62,7 +65,4 @@ function updateSegments(self, elasticity, compression)
   self.b_segment.force = f
   self.b_segment:computeForce()
   if self.b_segment.source_vertex ~= self.b_vertex then self.b_segment.source_vertex = self.b_vertex end
-  
-  self.a_segment.target_segment, self.b_segment.target_segment = self.b_segment, self.a_segment
-  
 end --updateSegments]]

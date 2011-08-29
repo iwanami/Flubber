@@ -9,9 +9,11 @@ local setmetatable = setmetatable
 local ipairs       = ipairs
 local Vector       = Vector
 local print = print
+local pi = math.pi
 --parametrage de l'environnement
 setfenv(1, lib)
 
+local v_count = 0
 
 --===================================================================================================================
 --cree un nouvel objet Vertex
@@ -25,11 +27,13 @@ setfenv(1, lib)
 --===================================================================================================================
 local function new(opts)
   local opts = opts or {}
+  v_count = v_count+1
   local self = {position      = opts.position or Vector(),
                 force         = opts.force or Vector(),
                 speed         = opts.speed or Vector(),
                 mu_frottement = opts.mu_frottement or -0.2,
-                mass          = opts.mass or 0.2,}
+                mass          = opts.mass or 0.2,
+                name          = v_count,}
   return setmetatable(self, lib)
 end --new]]
 
@@ -41,6 +45,7 @@ lib.__index = lib
 --trie les segments afin de pouvoir les parcourir correctement lors de la recherche de la forme du flubber
 --===================================================================================================================
 function sortSegments(self, condition)
+  print('sort', self)
   local n = #self
   local new_n
   repeat
@@ -48,13 +53,16 @@ function sortSegments(self, condition)
     for i = 1, n-1 do
       if condition(self[i], self[i+1]) then
         self[i], self[i+1] = self[i+1], self[i]
-        self[i].source_index = i
-        self[i+1].source_index = i+1
         new_n = i+1
       end
     end
     n = new_n
   until n < 1
+    
+  for i, segment in ipairs(self) do
+    print('in sort:', i, segment.source_vertex, segment.source_vertex.position, segment.theta/pi, segment.target_segment.source_vertex)
+    segment.source_index = i
+  end
 end --sortSegments]]
 
 --===================================================================================================================
@@ -81,5 +89,11 @@ function computeForce(self)
   -- ajout de la force de frottement
   result:addToSelf(self.speed*self.mu_frottement)
   self.force = result
-  print(result)
 end --computeForce]]
+
+--===================================================================================================================
+--renvoie un string contenant le nom d'un vertex
+--===================================================================================================================
+function __tostring(self)
+  return '('..self.name..')'
+end --__tostring]]

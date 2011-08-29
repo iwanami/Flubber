@@ -3,6 +3,12 @@ require 'Flubber'
 
 local should = test.Suite("shape")
 
+app = mimas.Application()
+win = mimas.Window()
+win:move(1,1)
+
+local shape
+
 function makeVertex()
   local v1 = Vertex{position      = Vector{100, 150},
                     force         = Vector(),
@@ -41,15 +47,39 @@ end
 
 
 
-function should.haveShape()
+flub = makeFlubber()
+flub:update()
+shape = flub:computeOuterShape()
+
+--[[function should.haveShape()
   local flub = makeFlubber()
   flub:update()
-  local shape = flub:computeShape()
+  local shape = flub:computeOuterShape()
   
   for i, v in ipairs(shape) do
     print(v.position)
   end
+
+end--]]
+
+function win.paint(p, w, h)
+  local path = mimas.Path()
+  local current = shape
+  local pos = current.source_vertex.position
+  path:moveTo(pos[1], pos[2])
+  while true do
+    current = current:nextSegment()
+    if not current or current == shape then
+      break
+    else
+      local pos = current.source_vertex.position
+      path:lineTo(pos[1], pos[2])
+    end
+  end
   
+  p:setPen(4, 0.5)
+  p:drawPath(path)
 end
 
-test.all()
+win:show()
+app:exec()

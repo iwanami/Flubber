@@ -107,9 +107,11 @@ function win.paint(p, w, h)
   
   --calcul des liens entre les points
   flub:update()
+  local shape = flub:computeOuterShape()
   
   local path = mimas.Path()
   local forces = mimas.Path()
+  local shape_path = mimas.Path()
   
   --on dessine les liens entre les points
   for i, edge in ipairs(flub.edge_list) do
@@ -134,11 +136,26 @@ function win.paint(p, w, h)
       forces:lineTo(vertex.position[1]+seg.force[1], vertex.position[2]+seg.force[2])
     end
   end
+  
+  local pos = shape.source_vertex.position
+  shape_path:moveTo(pos[1], pos[2])
+  while true do
+   local current = shape:nextSegment()
+   pos = current.source_vertex.position
+   if not current or current == shape then
+     break
+   else
+     shape_path:lineTo(pos[1], pos[2])
+   end
+ end
+
 
   p:setPen(2, 1)
 	p:drawPath(path)
 	p:setPen(2, 0.1)
 	p:drawPath(forces)
+	p:setPen(4, 0.5)
+  p:drawPath(shape_path)
 	win:update()
 end
 

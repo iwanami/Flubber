@@ -28,7 +28,7 @@ local function new(opts)
   local opts = opts or {}
   local self = {source_index   = opts.source_index or 0,
                 source_vertex  = opts.source_vertex or Vertex(),
-                target_segment = opts.target_segment or Segment(),
+                target_segment = opts.target_segment or {},
                 norm           = opts.norm or 0,
                 theta          = opts.theta or 0,
                 force          = opts.force or Vector(),}
@@ -46,3 +46,23 @@ lib.__index = lib
 function computeForce(self)
   self.norm, self.theta = self.force:toPolar()
 end--computeForce]]
+
+
+
+function nextSegment(self)
+  local target = self.target_segment
+  local target_segment_count = #target.source_vertex
+  if target_segment_count == 1 then
+    return nil
+  end
+  
+  local next_index = (target.source_index % target_segment_count) + 1
+  --[[local next_index = target.source_index
+  if next_index == 1 then
+    next_index = target_segment_count
+  else
+    next_index = next_index-1
+  end--]]
+  print('s_index:', self.source_index, 'from', self.source_vertex, self.source_vertex.position, '---->', target.source_vertex, target.source_vertex.position, 'n_index', '['..next_index..']')
+  return target.source_vertex[next_index]
+end
