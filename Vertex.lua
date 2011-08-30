@@ -60,7 +60,10 @@ function sortSegments(self, condition)
   until n < 1
     
   for i, segment in ipairs(self) do
-    print('in sort:', i, segment.source_vertex, segment.source_vertex.position, segment.theta/pi, segment.target_segment.source_vertex)
+    print(
+      'in sort:', i, segment.source_vertex, segment.source_vertex.position, 
+      segment.vector, segment.theta/pi, 
+      segment.target_segment.source_vertex)
     segment.source_index = i
   end
 end --sortSegments]]

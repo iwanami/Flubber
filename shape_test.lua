@@ -79,6 +79,7 @@ function win.paint(p, w, h)
   
   p:setPen(4, 0.5)
   p:drawPath(path)
+  io.flush()
 end
 
 win:show()

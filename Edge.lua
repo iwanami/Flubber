@@ -33,8 +33,9 @@ function new(opts)
                 a_vertex  = opts.a_vertex or Vertex(),
                 b_vertex  = opts.b_vertex or Vertex(),}
   self.a_segment.target_segment = self.b_segment
+  self.a_segment.source_vertex  = self.a_vertex
   self.b_segment.target_segment = self.a_segment
-  print(self.a_vertex, '<----->', self.b_vertex)
+  self.b_segment.source_vertex  = self.b_vertex
   setmetatable(self, lib)
   return self
 end --new]]
@@ -58,11 +59,12 @@ function updateSegments(self, elasticity, compression)
   --calcul de la force s'appliquant sur les vertices
   local f = v1*(elasticity + (compression / norm^2))
   
+  self.a_segment.vector = v1
   self.a_segment.force = -f
-  self.a_segment:computeForce()
-  if self.a_segment.source_vertex ~= self.a_vertex then self.a_segment.source_vertex = self.a_vertex end
+  self.a_segment:computePolar()
   
+  self.b_segment.vector = -v1
   self.b_segment.force = f
-  self.b_segment:computeForce()
-  if self.b_segment.source_vertex ~= self.b_vertex then self.b_segment.source_vertex = self.b_vertex end
+  self.b_segment:computePolar()
+  
 end --updateSegments]]

@@ -5,7 +5,7 @@ local should = test.Suite("Flubber")
 
 
 function makeVertex()
-  local v1 = Vertex{position      = Vector{100, 200},
+  local v1 = Vertex{position      = Vector{100, 300},
                     force         = Vector(),
                     speed         = Vector(),
                     mu_frottement = -0.2,
@@ -15,12 +15,12 @@ function makeVertex()
                     speed         = Vector(),
                     mu_frottement = -0.2,
                     mass          = 0.2,}
-  local v3 = Vertex{position      = Vector{200, 100},
+  local v3 = Vertex{position      = Vector{300, 100},
                     force         = Vector(),
                     speed         = Vector(),
                     mu_frottement = -0.2,
                     mass          = 0.2,}
-  local v4 = Vertex{position      = Vector{200, 200},
+  local v4 = Vertex{position      = Vector{300, 300},
                     force         = Vector(),
                     speed         = Vector(),
                     mu_frottement = -0.2,
@@ -31,7 +31,7 @@ end
 
 
 function makeFlubber()
-  local f = Flubber(-0.18, 70, 100, 300)
+  local f = Flubber(-0.2, 70, 100, 300)
   local v1, v2, v3, v4 = makeVertex()
   f:addVertex(v1)
   f:addVertex(v2)
@@ -108,6 +108,7 @@ function win.paint(p, w, h)
   --calcul des liens entre les points
   flub:update()
   local shape = flub:computeOuterShape()
+  io.flush()
   
   local path = mimas.Path()
   local forces = mimas.Path()
@@ -137,25 +138,26 @@ function win.paint(p, w, h)
     end
   end
   
-  local pos = shape.source_vertex.position
+  local current = shape
+  local pos = current.source_vertex.position
   shape_path:moveTo(pos[1], pos[2])
   while true do
-   local current = shape:nextSegment()
-   pos = current.source_vertex.position
-   if not current or current == shape then
-     break
-   else
-     shape_path:lineTo(pos[1], pos[2])
-   end
- end
+    current = current:nextSegment()
+    if (not current) or current == shape then
+      break
+    else
+      local pos = current.source_vertex.position
+      shape_path:lineTo(pos[1], pos[2])
+    end
+  end
 
-
+	p:setPen(4, 0.5)
+  p:drawPath(shape_path)
   p:setPen(2, 1)
 	p:drawPath(path)
 	p:setPen(2, 0.1)
 	p:drawPath(forces)
-	p:setPen(4, 0.5)
-  p:drawPath(shape_path)
+
 	win:update()
 end
 

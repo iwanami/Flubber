@@ -24,7 +24,7 @@ setfenv(1, lib)
 --remarques: - les arguments doivent etre passes par noms. s'il ne sont pas renseignes, des valeurs par defaut sont 
 --             attribuees
 --===================================================================================================================
-local function new(opts)
+local function new(vertex1, vertex2)
   local opts = opts or {}
   local self = {source_index   = opts.source_index or 0,
                 source_vertex  = opts.source_vertex or Vertex(),
@@ -43,8 +43,8 @@ lib.__index = lib
 --===================================================================================================================
 --calcule la force representee par le segment
 --===================================================================================================================
-function computeForce(self)
-  self.norm, self.theta = self.force:toPolar()
+function computePolar(self)
+  self.norm, self.theta = self.vector:toPolar()
 end--computeForce]]
 
 
@@ -63,6 +63,6 @@ function nextSegment(self)
   else
     next_index = next_index-1
   end--]]
-  print('s_index:', self.source_index, 'from', self.source_vertex, self.source_vertex.position, '---->', target.source_vertex, target.source_vertex.position, 'n_index', '['..next_index..']')
+  print('nextSegment: s_index:', self.source_index, 'from', self.source_vertex, self.source_vertex.position, '---->', target.source_vertex, target.source_vertex.position, 'n_index', '['..next_index..']')
   return target.source_vertex[next_index]
 end

@@ -41,7 +41,7 @@ setfenv(1, lib)
 --===================================================================================================================
 function new(elasticity, stable_distance, glue, cut, opts)
   local opts = opts or {}
-  local self = {vertex_list    = opts.vertex_list or {},
+  local self = {vertex_list     = opts.vertex_list or {},
                 edge_list       = opts.edge_list or {},
                 edge_matrix     = opts.edge_matrix or {},
                 segment_list    = opts.segment_list or {},
@@ -86,7 +86,7 @@ function draw(self)
 end --draw]]
 
 --===================================================================================================================
---Met a jour la liste des Edges
+--Met a jour la liste des Edges par la methode des distances
 --===================================================================================================================
 function computeEdges(self)
   local vertex_list_size = #self.vertex_list
@@ -123,6 +123,14 @@ function computeEdges(self)
     end
   end
 end --computeEdges]]
+
+
+--===================================================================================================================
+--Met a jour la liste des Edges par une triangulation de delaunay
+--===================================================================================================================
+function computeDelaunayEdges(self)
+  
+end
 
 
 --===================================================================================================================
@@ -180,6 +188,7 @@ end --computeShape]]
 --===================================================================================================================
 function computeOuterShape(self)
   sortAllSegments(self)
+  print('in computeOuterShape - list of all Vertices:')
   for i, v in ipairs(self.vertex_list) do
     print('vertex:',v , v.position)
     for j, s in ipairs(v) do
@@ -190,7 +199,6 @@ function computeOuterShape(self)
   local result
   local mark = worker:now()
   for i, segment in ipairs(self.segment_list) do
-    print(i)
     if segment.mark ~= mark then
       local count = tryShape(segment, mark)
       if count > max_count then
