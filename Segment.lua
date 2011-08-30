@@ -45,10 +45,12 @@ lib.__index = lib
 --===================================================================================================================
 function computePolar(self)
   self.norm, self.theta = self.vector:toPolar()
-end--computeForce]]
+end--computePolar]]
 
 
-
+--===================================================================================================================
+--renvoie le segment "a droite" (sens anti-horaire) sur un vertex. permet de parcourir le contour d'une forme
+--===================================================================================================================
 function nextSegment(self)
   local target = self.target_segment
   local target_segment_count = #target.source_vertex

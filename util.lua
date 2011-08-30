@@ -10,7 +10,7 @@ function insertIfNotExists(list, item)
     end
   end
   if not exists then insert(list, item) end
-end
+end --insertIfNotExists]]
 
 
 --===================================================================================================================
@@ -23,4 +23,4 @@ function removeIfExists(list, item)
       break
     end
   end
-end
+end--removeIfExists]]
