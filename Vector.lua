@@ -141,3 +141,74 @@ end --negateSelf]]
 function __tostring(self)
   return '('..self[1]..', '..self[2]..')'
 end --__tostring]]
+
+
+--===================================================================================================================
+--indique si le point se trouve sur, a l'exterieur ou dans le cercle circonscrit du triangle fourni en parametre
+--remarques: - la fonction renvoie 1 si le point est a l'exterieur, 0 s'il se trouve dessus et -1 s'il est a
+--             l'interieur
+--===================================================================================================================
+function onCircumcicle(self, triangle)
+  local a = triangle[1].position
+  local b = triangle[2].position
+  local c = triangle[3].position
+  local ab = b-a
+  local ac = c-a
+  --calcul des coordonnees du centre du cercle circonscrit
+  --c'est long et merdique, mais c'est la resolution du systeme:
+  --AO*BC = 0
+  --CO*AB = 0
+  --ou O est l'orthocentre. je vous laisse l'exercice de refaire le systeme :p
+  local y = ((c[2]*ab[2] + (c[1]-b[1])*ab[1])*ac[1] - b[2]*ac[2]*ab[1])/(ac[1]*ab[2] - ac[2]*ab[1])
+  local x = ((b[2]-y)*ac[2])/ac[1]+b[1]
+  --creation du nouveau point
+  local o = new{x, y}
+  --calcul de la longueur du rayon du cercle circonscrit
+  local rayon = (o-a):norm()
+  --calcul de la distance entre l'orthocentre et le point
+  local dist_po = (o-self):norm()
+  
+  if dist_po > rayon then return 1
+  elseif dist_po == rayon then return 0
+  else return -1
+  end
+  
+end
+
+--===================================================================================================================
+--indique si le point se trouve sur, a l'exterieur ou dans le triangle fourni en parametre
+--remarques: - la fonction renvoie 1 si le point est a l'exterieur, 0 s'il se trouve dessus et -1 s'il est a
+--             l'interieur
+--===================================================================================================================
+function onTriangle(self, triangle)
+  local v0 = triangle[3].position-triangle[1].position
+  local v1 = triangle[2].position-triangle[1].position
+  local v2 = self-triangle[1].position
+  local dot00 = dot(v0, v0)
+  local dot01 = dot(v0, v1)
+  local dot02 = dot(v0, v2)
+  local dot11 = dot(v1, v1)
+  local dot12 = dot(v1, v2)
+  
+  --calcul des coefficients permettant de determiner la position du point par rapport au triangle
+  local denom = dot00*dot11-dot01^2
+  u = (dot11*dot02 - dot01*dot12)/denom
+  v = (dot00*dot12 - dot01*dot12)/denom
+  
+  if (u > 0) and (v > 0) and (u+v <= 1) then
+    return -1
+  elseif (u == 0) or (v == 0) and (u+v) then
+    return 0
+  else
+    return 1
+  end
+  
+end
+
+
+--===================================================================================================================
+--effectue le produit scalaire des deux vecteurs
+--===================================================================================================================
+function dot(vector1, vector2)
+  return vector1[1]*vector2[1]+vector1[2]*vector2[2]
+end
