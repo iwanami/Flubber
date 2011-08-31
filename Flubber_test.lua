@@ -107,56 +107,7 @@ function win.paint(p, w, h)
   
   --calcul des liens entre les points
   flub:update()
-  local shape = flub:computeOuterShape()
-  io.flush()
-  
-  local path = mimas.Path()
-  local forces = mimas.Path()
-  local shape_path = mimas.Path()
-  
-  --on dessine les liens entre les points
-  for i, edge in ipairs(flub.edge_list) do
-    path:moveTo(edge.a_vertex.position[1], edge.a_vertex.position[2])
-    path:lineTo(edge.b_vertex.position[1], edge.b_vertex.position[2])
-  end
-
-  
-  --on dessine les points
-  path:moveTo(flub.vertex_list[1].position[1], flub.vertex_list[1].position[2])
-  for i,vertex in ipairs(flub.vertex_list) do
-    
-    path:addRect(vertex.position[1], vertex.position[2], 2, 2)
-    --if node.position == point_choisi then 
-      --path:addRect(point_choisi.old_x, point_choisi.old_y, 3, 3)
-      --path:moveTo(node.position.x, node.position.y)
-    --end
-    
-    --dessin des forces
-    for j, seg in ipairs(vertex) do
-      forces:moveTo(vertex.position[1], vertex.position[2])
-      forces:lineTo(vertex.position[1]+seg.force[1], vertex.position[2]+seg.force[2])
-    end
-  end
-  
-  local current = shape
-  local pos = current.source_vertex.position
-  shape_path:moveTo(pos[1], pos[2])
-  while true do
-    current = current:nextSegment()
-    if (not current) or current == shape then
-      break
-    else
-      local pos = current.source_vertex.position
-      shape_path:lineTo(pos[1], pos[2])
-    end
-  end
-
-	p:setPen(4, 0.5)
-  p:drawPath(shape_path)
-  p:setPen(2, 1)
-	p:drawPath(path)
-	p:setPen(2, 0.1)
-	p:drawPath(forces)
+  flub:draw(p, false)
 
 	win:update()
 end

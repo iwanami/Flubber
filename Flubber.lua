@@ -3,6 +3,7 @@ require 'Vertex'
 require 'Vector'
 require 'Segment'
 require 'util'
+require 'lubyk'
 
 --creation de la classe 'anonyme'
 local lib = {}
@@ -20,6 +21,8 @@ local worker = worker
 local print = print
 local removeIfExists = removeIfExists
 local pi = math.pi
+local Path = mimas.Path
+local flush = io.flush
 --parametrage de l'environnement
 setfenv(1, lib)
 
@@ -66,6 +69,9 @@ function addVertex(self, vertex)
   self.edge_matrix[#self.vertex_list] = {}
 end --addVertex]]
 
+--===================================================================================================================
+--cree un vertex a partir de la position fournie en parametre et l'ajoute a la liste
+--===================================================================================================================
 function addVertexFromPosition(self, position)
   local v = Vertex{position      = position,
                    force         = Vector(),
@@ -74,21 +80,13 @@ function addVertexFromPosition(self, position)
                    mass          = 0.2,}
   v:computeForce()
   self:addVertex(v)
-end
+end --addVertexFromPosition]]
 
-
-
---===================================================================================================================
---dessine le Flubber a partir des listes de Vertices et d'Edges
---===================================================================================================================
-function draw(self)
-  
-end --draw]]
 
 --===================================================================================================================
 --Met a jour la liste des Edges par la methode des distances
 --===================================================================================================================
-function computeEdges(self)
+local function computeEdges(self)
   local vertex_list_size = #self.vertex_list
   for i, vertex in ipairs(self.vertex_list) do
     local row = self.edge_matrix[i]
@@ -128,7 +126,7 @@ end --computeEdges]]
 --===================================================================================================================
 --Met a jour la liste des Edges par une triangulation de delaunay
 --===================================================================================================================
-function computeDelaunayEdges(self)
+local function computeDelaunayEdges(self)
   
 end --computeDelaunayEdges]]
 
@@ -166,10 +164,11 @@ end
 --===================================================================================================================
 --determine les edges de la face infinie du graphe representant le flubber
 --===================================================================================================================
-function tryShape(segment, mark)
+local function tryShape(segment, mark)
   local current = segment
   local count = 0
   while true do
+    print("tryShape:", current)
     current = current:nextSegment()
     if not current or current == segment then
       break
@@ -186,13 +185,14 @@ end --computeShape]]
 --===================================================================================================================
 --determine les edges de la face infinie du graphe representant le flubber
 --===================================================================================================================
-function computeOuterShape(self)
+local function computeOuterShape(self)
   sortAllSegments(self)
   print('in computeOuterShape - list of all Vertices:')
   for i, v in ipairs(self.vertex_list) do
     print('vertex:',v , v.position)
     for j, s in ipairs(v) do
       print('target:', s.target_segment.source_vertex.position, 'angle:', s.theta/pi..' π')
+      flush()
     end
   end
   local max_count = 0
@@ -207,6 +207,7 @@ function computeOuterShape(self)
       end
     end
   end
+  print(result)
   return result
 end
 
@@ -222,3 +223,64 @@ function update(self)
   computeForces(self)
   
 end --update]]
+
+--===================================================================================================================
+--dessine le Flubber a partir des listes de Vertices et d'Edges sur la composante graphique fournie en parametre.
+--le parametre withForces permet d'afficher les forces sur chaque Vertex, disponible pour des raisons de 
+--debug/esthetique
+--===================================================================================================================
+function draw(self, p, withForces)
+  
+  local path = Path()
+  local forces = Path()
+  local shape_path = Path()
+  
+  --on cree le chemin des liens entre les points
+  for i, edge in ipairs(self.edge_list) do
+    path:moveTo(edge.a_vertex.position[1], edge.a_vertex.position[2])
+    path:lineTo(edge.b_vertex.position[1], edge.b_vertex.position[2])
+  end
+  
+  --on cree le chemin des points
+  path:moveTo(self.vertex_list[1].position[1], self.vertex_list[1].position[2])
+  for i,vertex in ipairs(self.vertex_list) do
+    
+    path:addRect(vertex.position[1], vertex.position[2], 2, 2)
+    
+    --chemin des forces
+    if withForces then
+      for j, seg in ipairs(vertex) do
+        forces:moveTo(vertex.position[1], vertex.position[2])
+        forces:lineTo(vertex.position[1]+seg.force[1], vertex.position[2]+seg.force[2])
+      end
+    end
+  end
+  
+  --chemin de la coque du flubber
+  local shape = computeOuterShape(self)
+  --le if sert juste a eviter les problemes s'il n'y a pas de liens...
+  if shape then
+    local current = shape
+    local pos = current.source_vertex.position
+    shape_path:moveTo(pos[1], pos[2])
+    while true do
+      current = current:nextSegment()
+      if (not current) or current == shape then
+        break
+      else
+        local pos = current.source_vertex.position
+        shape_path:lineTo(pos[1], pos[2])
+      end
+    end
+  end
+  
+  p:setPen(4, 0.5)
+  p:drawPath(shape_path)
+  p:setPen(2, 1)
+	p:drawPath(path)
+	if withForces then
+  	p:setPen(2, 0.1)
+  	p:drawPath(forces)
+	end
+  
+end --draw]]

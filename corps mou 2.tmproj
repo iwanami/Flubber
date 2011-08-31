@@ -3,20 +3,28 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>Flubber.lua</string>
+	<string>DelaunayEdges.cpp</string>
 	<key>documents</key>
 	<array>
 		<dict>
 			<key>filename</key>
+			<string>DelaunayEdges.cpp</string>
+			<key>lastUsed</key>
+			<date>2011-08-30T19:13:53Z</date>
+			<key>selected</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>filename</key>
 			<string>util.lua</string>
 			<key>lastUsed</key>
-			<date>2011-08-26T13:20:18Z</date>
+			<date>2011-08-30T19:13:53Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>Edge.lua</string>
 			<key>lastUsed</key>
-			<date>2011-08-30T08:37:03Z</date>
+			<date>2011-08-30T19:09:56Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -34,15 +42,13 @@
 			<key>filename</key>
 			<string>Flubber.lua</string>
 			<key>lastUsed</key>
-			<date>2011-08-30T08:43:52Z</date>
-			<key>selected</key>
-			<true/>
+			<date>2011-08-30T19:10:41Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>Segment.lua</string>
 			<key>lastUsed</key>
-			<date>2011-08-30T08:22:16Z</date>
+			<date>2011-08-30T19:12:31Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -78,19 +84,33 @@
 			<key>filename</key>
 			<string>Vector.lua</string>
 			<key>lastUsed</key>
-			<date>2011-08-26T12:37:49Z</date>
+			<date>2011-08-30T19:10:58Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>Vertex.lua</string>
 			<key>lastUsed</key>
-			<date>2011-08-28T14:26:40Z</date>
+			<date>2011-08-30T19:12:55Z</date>
 		</dict>
 	</array>
 	<key>fileHierarchyDrawerWidth</key>
 	<integer>200</integer>
 	<key>metaData</key>
 	<dict>
+		<key>DelaunayEdges.cpp</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>2</integer>
+				<key>line</key>
+				<integer>40</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>3</integer>
+		</dict>
 		<key>Edge.lua</key>
 		<dict>
 			<key>caret</key>
@@ -103,7 +123,7 @@
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>19</integer>
+			<integer>28</integer>
 		</dict>
 		<key>Edge_test.lua</key>
 		<dict>
@@ -126,28 +146,12 @@
 				<key>column</key>
 				<integer>21</integer>
 				<key>line</key>
-				<integer>130</integer>
+				<integer>132</integer>
 			</dict>
-			<key>columnSelection</key>
-			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>112</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>9</integer>
-				<key>line</key>
-				<integer>130</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>29</integer>
-				<key>line</key>
-				<integer>130</integer>
-			</dict>
+			<integer>0</integer>
 		</dict>
 		<key>Flubber_test.lua</key>
 		<dict>
@@ -184,14 +188,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>57</integer>
+				<integer>109</integer>
 				<key>line</key>
-				<integer>30</integer>
+				<integer>51</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>6</integer>
+			<integer>29</integer>
 		</dict>
 		<key>Segment_test.lua</key>
 		<dict>
@@ -228,30 +232,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>0</integer>
+				<integer>15</integer>
 				<key>line</key>
-				<integer>17</integer>
+				<integer>9</integer>
 			</dict>
-			<key>columnSelection</key>
-			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>102</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>25</integer>
-				<key>line</key>
-				<integer>18</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>0</integer>
-				<key>line</key>
-				<integer>17</integer>
-			</dict>
 		</dict>
 		<key>Vector_test.lua</key>
 		<dict>
@@ -288,14 +276,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>36</integer>
+				<integer>13</integer>
 				<key>line</key>
 				<integer>51</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>25</integer>
+			<integer>60</integer>
 		</dict>
 		<key>Vertex_test.lua</key>
 		<dict>
@@ -360,7 +348,7 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>3</integer>
+				<integer>21</integer>
 				<key>line</key>
 				<integer>25</integer>
 			</dict>
@@ -385,6 +373,7 @@
 		<string>Vertex.lua</string>
 		<string>Vertex_test.lua</string>
 		<string>util.lua</string>
+		<string>DelaunayEdges.cpp</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
