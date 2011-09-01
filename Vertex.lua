@@ -4,6 +4,7 @@ require 'Vector'
 local lib = {}
 --nommage de la classe
 Vertex    = lib
+Vertex.mu_frottement = -0.1
 --copie locale des fonctions standard utilisees
 local setmetatable = setmetatable
 local ipairs       = ipairs
@@ -26,12 +27,13 @@ local v_count = 0
 --             attribuees
 --===================================================================================================================
 local function new(opts)
+  print(lib.mu_frottement)
   local opts = opts or {}
   v_count = v_count+1
   local self = {position      = opts.position or Vector(),
                 force         = opts.force or Vector(),
                 speed         = opts.speed or Vector(),
-                mu_frottement = opts.mu_frottement or -0.2,
+                mu_frottement = opts.mu_frottement or lib.mu_frottement,
                 mass          = opts.mass or 0.2,
                 name          = v_count,}
   return setmetatable(self, lib)
@@ -72,12 +74,16 @@ end --sortSegments]]
 --deplace le vertex en fonction de la force qui s'applique dessus
 --===================================================================================================================
 function move(self, delta_t)
-  -- a = F/m
-  local a = self.force*(1/self.mass)
-  -- X = Xo + Vo * t + 1/2 a t^2
-  self.position:addToSelf(self.speed*delta_t+(a*(0.5*delta_t^2)))
-  -- V = Vo + a* t
-  self.speed:addToSelf(a*delta_t)
+  if self.dragged then
+    -- do not move
+  else
+    -- a = F/m
+    local a = self.force*(1/self.mass)
+    -- X = Xo + Vo * t + 1/2 a t^2
+    self.position:addToSelf(self.speed*delta_t+(a*(0.5*delta_t^2)))
+    -- V = Vo + a* t
+    self.speed:addToSelf(a*delta_t)
+  end
 end --move]]
 
 --===================================================================================================================
@@ -90,7 +96,7 @@ function computeForce(self)
     result:addToSelf(s.force)
   end
   -- ajout de la force de frottement
-  result:addToSelf(self.speed*self.mu_frottement)
+  result:addToSelf(self.speed*lib.mu_frottement)
   self.force = result
 end --computeForce]]
 

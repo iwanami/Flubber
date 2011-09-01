@@ -42,7 +42,8 @@ setfenv(1, lib)
 --           - les arguments doivent etre passes par noms. s'il ne sont pas renseignes, des valeurs par defaut sont 
 --             attribuees
 --===================================================================================================================
-function new(elasticity, stable_distance, glue, cut, opts)
+function new(elasticity, stable_distance, glue, cut, mu, opts)
+  Vertex.mu_frottement = mu or -0.2
   local opts = opts or {}
   local self = {vertex_list     = opts.vertex_list or {},
                 edge_list       = opts.edge_list or {},
@@ -80,50 +81,38 @@ function addVertexFromPosition(self, position)
                    mass          = 0.2,}
   v:computeForce()
   self:addVertex(v)
+  return v
 end --addVertexFromPosition]]
 
 --===================================================================================================================
 --verifie si les segments entre deux couples de vertex se croisent
 --===================================================================================================================
-function doesCrossWithExistingEdge(self, v1, v2)
-  local a = v1.position
-  local b = v2.position
+function doesCrossWithExistingEdge(self, av, bv, edge)
+  local a = av.position
+  local b = bv.position
   local ab = b-a
   
   for i, e in ipairs(self.edge_list) do
-    local cv = e.a_vertex
-    local dv = e.b_vertex
-    if cv == v1 or cv == v2 or dv == v1 or dv == v2 then
-      -- skip
-    else
-      local c = cv.position
-      local d = dv.position
-      local cd = e.a_segment.vector
-      if Vector.segmentIntersects(a, b, ab, c, d, cd) then
-        return true
-      end
-    end
-  end
-  return false
-  
-  
-end --doesCrossWithExistingEdge]]
-function doesCrossOtherEdge(self, edge)
-  local a = edge.a_vertex.position
-  local b = edge.b_vertex.position
-  local ab = edge.a_segment.vector
-  
-  for i, e in ipairs(self.edge_list) do
     if e ~= edge then
-      local c = e.a_vertex.position
-      local d = e.b_vertex.position
-      local cd = e.a_segment.vector
-      if Vector.segmentIntersects(a, b, ab, c, d, cd) then
-        return true
+      local cv = e.a_vertex
+      local dv = e.b_vertex
+      if cv == av or cv == bv or dv == av or dv == bv then
+        -- skip
+      else
+        local c = cv.position
+        local d = dv.position
+        local cd = e.a_segment.vector
+        if Vector.segmentIntersects(a, b, ab, c, d, cd) then
+          return true
+        end
       end
     end
   end
   return false
+end --doesCrossWithExistingEdge]]
+
+function doesCrossOtherEdge(self, edge)
+  return doesCrossWithExistingEdge(self, edge.a_vertex, edge.b_vertex, edge)
 end --doesCrossOtherEdge]]
 
 --===================================================================================================================
@@ -272,7 +261,7 @@ end --update]]
 --le parametre withForces permet d'afficher les forces sur chaque Vertex, disponible pour des raisons de 
 --debug/esthetique
 --===================================================================================================================
-function draw(self, p, withForces)
+function draw(self, p, withForces, withEdges, withShape)
   
   local path = Path()
   local forces = Path()
@@ -308,22 +297,29 @@ function draw(self, p, withForces)
     shape_path:moveTo(pos[1], pos[2])
     while true do
       current = current:nextSegment()
-      if (not current) or current == shape then
+      if not current then
         break
       else
         local pos = current.source_vertex.position
         shape_path:lineTo(pos[1], pos[2])
       end
+      if current == shape then
+        break
+      end
     end
   end
   
-  p:setPen(4, 0.5)
-  p:drawPath(shape_path)
-  p:setPen(2, 1)
-	p:drawPath(path)
 	if withForces then
   	p:setPen(2, 0.1)
   	p:drawPath(forces)
 	end
-  
+  if withEdges then
+    p:setPen(0.5, 1, 0.5, 0.5)
+    p:drawPath(path)
+  end
+  if withShape then
+    p:setPen(4, 0.5)
+    p:setBrush(0.5, 1, 1, 0.3)
+    p:drawPath(shape_path)
+  end
 end --draw]]

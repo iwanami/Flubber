@@ -223,7 +223,7 @@ function segmentIntersects(a, b, ab, c, d, cd)
 
   --print('t1:', t1, 't2:', t2)
 
-  if t1 >= 0 and t2 >= 0 and t1 <= 1 and t2 <= 1 then
+  if t1 > 0 and t2 > 0 and t1 < 1 and t2 < 1 then
     --print('prout')
     return true
   end

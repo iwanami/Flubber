@@ -31,7 +31,7 @@ end
 
 
 function makeFlubber()
-  local f = Flubber(-0.2, 70, 100, 300)
+  local f = Flubber(-0.2, 70, 100, 300, -0.05)
   local v1, v2, v3, v4 = makeVertex()
   f:addVertex(v1)
   f:addVertex(v2)
@@ -63,25 +63,23 @@ function win.click(x, y, type) --(x, y, type, btn, mod) --type: mimas.MousePress
     --verifie si un point est a proximite
     for i, vertex in ipairs(flub.vertex_list) do
       if manhattanDist(vertex.position, x, y) < Selection_Dist then
-        point_choisi = vertex.position
+        dragged_vertex = vertex
+        vertex.dragged = true
         break
       end
     end
     --si un point a ete choisi dans la boucle, on sauve ses coordonnees d'origine
-    if point_choisi then
-      point_choisi.old_x = point_choisi[1]
-      point_choisi.old_y = point_choisi[2]
+    if dragged_vertex then
+      -- dragging
     else
-      flub:addVertexFromPosition(Vector{x, y})
+      dragged_vertex = flub:addVertexFromPosition(Vector{x, y})
     end
   -- si la souris est relachee
   elseif type==mimas.MouseRelease then
     --le relachement a lieu pendant un drag, on remet a false le drag, et on reinitialise le point selectionne
-    if is_dragging then
-      is_dragging = false
-      point_choisi.old_x = nil
-      point_choisi.old_y = nil
-      point_choisi = nil
+    if dragged_vertex then
+      dragged_vertex.dragged = false
+      dragged_vertex = nil
     end
     win:update()
   end
@@ -89,15 +87,9 @@ function win.click(x, y, type) --(x, y, type, btn, mod) --type: mimas.MousePress
 end
 
 function win.mouse(x, y)
-  
-  mouse.xCoord = x
-  mouse.yCoord = y
-  if not is_dragging and point_choisi then
-    is_dragging = true
-  end
-  if is_dragging then
-    point_choisi[1] = x
-    point_choisi[2] = y
+  if dragged_vertex then
+    dragged_vertex.position[1] = x
+    dragged_vertex.position[2] = y
     win:update()
   end
 end
@@ -107,7 +99,7 @@ function win.paint(p, w, h)
   
   --calcul des liens entre les points
   flub:update()
-  flub:draw(p, true)
+  flub:draw(p, true, false, true)
 
 	win:update()
 end
