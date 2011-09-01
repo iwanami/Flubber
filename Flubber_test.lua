@@ -31,7 +31,7 @@ end
 
 
 function makeFlubber()
-  local f = Flubber(-0.2, 70, 100, 300, -0.05)
+  local f = Flubber(-0.2, 70, 100, 300, -5)
   local v1, v2, v3, v4 = makeVertex()
   f:addVertex(v1)
   f:addVertex(v2)
@@ -99,7 +99,7 @@ function win.paint(p, w, h)
   
   --calcul des liens entre les points
   flub:update()
-  flub:draw(p, true, false, true)
+  flub:qtDraw(p, true, true, true, true)
 
 	win:update()
 end

@@ -21,8 +21,11 @@ local worker = worker
 local print = print
 local removeIfExists = removeIfExists
 local pi = math.pi
+local sin = math.sin
+local cos = math.cos
 local Path = mimas.Path
 local flush = io.flush
+local EmptyBrush = mimas.EmptyBrush
 --parametrage de l'environnement
 setfenv(1, lib)
 
@@ -85,7 +88,7 @@ function addVertexFromPosition(self, position)
 end --addVertexFromPosition]]
 
 --===================================================================================================================
---verifie si les segments entre deux couples de vertex se croisent
+--verifie si le segment croise le segment entre les deux points
 --===================================================================================================================
 function doesCrossWithExistingEdge(self, av, bv, edge)
   local a = av.position
@@ -96,9 +99,8 @@ function doesCrossWithExistingEdge(self, av, bv, edge)
     if e ~= edge then
       local cv = e.a_vertex
       local dv = e.b_vertex
-      if cv == av or cv == bv or dv == av or dv == bv then
-        -- skip
-      else
+      --l'edge est traite seulement s'ils n'ont pas de sommet commun
+      if not (cv == av or cv == bv or dv == av or dv == bv) then
         local c = cv.position
         local d = dv.position
         local cd = e.a_segment.vector
@@ -111,6 +113,9 @@ function doesCrossWithExistingEdge(self, av, bv, edge)
   return false
 end --doesCrossWithExistingEdge]]
 
+--===================================================================================================================
+--verifie l'edge en croise un autre deja existant
+--===================================================================================================================
 function doesCrossOtherEdge(self, edge)
   return doesCrossWithExistingEdge(self, edge.a_vertex, edge.b_vertex, edge)
 end --doesCrossOtherEdge]]
@@ -129,6 +134,7 @@ local function computeEdges(self)
       local vect = other_vertex.position-vertex.position
       local norm = vect:norm()
       --si la norme du vecteur est dans la portee de la distance de connection, on ajoute un nouveau lien a la table
+      --le lien n'est pas cree s'il en croise un autre deja existant
       if  norm <= self.Glue and not edge and not doesCrossWithExistingEdge(self, vertex, other_vertex) then
         edge = Edge{a_vertex = vertex, b_vertex = other_vertex}
         insert(self.edge_list, edge)
@@ -138,6 +144,7 @@ local function computeEdges(self)
         insert(self.segment_list, edge.b_segment)
         row[j] = edge
         --si la norme est plus grande que le seuil de rupture, on supprime le lien
+        --l'edge est supprime s'il coupe un autre deja existant
       elseif edge and (norm > self.Cut or doesCrossOtherEdge(self, edge)) then
         row[j] = nil
         removeIfExists(self.edge_list, edge)
@@ -159,7 +166,7 @@ end --computeEdges]]
 --Met a jour la liste des Edges par une triangulation de delaunay
 --===================================================================================================================
 local function computeDelaunayEdges(self)
-  
+  --not used!!
 end --computeDelaunayEdges]]
 
 
@@ -191,7 +198,7 @@ local function sortAllSegments(self)
   for i, v in ipairs(self.vertex_list) do
     v:sortSegments(function(a,b) return a.theta > b.theta end)
   end
-end
+end --sortAllSegments]]
 
 --===================================================================================================================
 --determine les edges de la face infinie du graphe representant le flubber
@@ -211,7 +218,7 @@ local function tryShape(segment, mark)
   end
   --print(count)
   return count
-end --computeShape]]
+end --tryShape]]
 
 
 --===================================================================================================================
@@ -219,14 +226,6 @@ end --computeShape]]
 --===================================================================================================================
 local function computeOuterShape(self)
   sortAllSegments(self)
-  --[[print('in computeOuterShape - list of all Vertices:')
-  for i, v in ipairs(self.vertex_list) do
-    print('vertex:',v , v.position)
-    for j, s in ipairs(v) do
-      print('target:', s.target_segment.source_vertex.position, 'angle:', s.theta/pi..' π')
-      flush()
-    end
-  end--]]
   local max_count = 0
   local result
   local mark = worker:now()
@@ -239,87 +238,150 @@ local function computeOuterShape(self)
       end
     end
   end
-  --print(result)
   return result
-end
+end --computeOuterShape]]
 
 
 --===================================================================================================================
 --met a jour les listes de Vertices et d'Edges
 --===================================================================================================================
 function update(self)
-  
   computeEdges(self)
   local ct = worker:now()
   moveVertices(self, ct)
-  computeForces(self)
-  
+  computeForces(self)  
 end --update]]
+
+--===================================================================================================================
+--cree le chemin de dessin des vertex
+--===================================================================================================================
+function qtDrawPoints(self)
+  local path = Path()
+  --on cree le chemin des liens entre les points
+  for i, vertex in ipairs(self.vertex_list) do
+    path:addRect(vertex.position[1], vertex.position[2], 2, 2)
+  end
+  return path
+end --qtDrawEdges]]
+
+--===================================================================================================================
+--cree le chemin de dessin des edges
+--===================================================================================================================
+function qtDrawEdges(self)
+  local path = Path()
+  --on cree le chemin des liens entre les points
+  for i, edge in ipairs(self.edge_list) do
+    path:moveTo(edge.a_vertex.position[1], edge.a_vertex.position[2])
+    path:lineTo(edge.b_vertex.position[1], edge.b_vertex.position[2])
+  end
+  return path
+end --qtDrawEdges]]
+
+--===================================================================================================================
+--cree le chemin de dessin des forces s'appliquant sur chaque point
+--===================================================================================================================
+function qtDrawForces(self)
+  local path = Path()
+  for i,vertex in ipairs(self.vertex_list) do
+    --chemin des forces
+    for j, seg in ipairs(vertex) do
+      path:moveTo(vertex.position[1], vertex.position[2])
+      path:lineTo(vertex.position[1]+seg.force[1], vertex.position[2]+seg.force[2])
+    end
+  end
+  return path
+end --qtDrawForces]]
+
+--===================================================================================================================
+--calcule et renvoie le point de controle de la courbe de bezier pour le point b
+--===================================================================================================================
+function computeCtrlPoint(a, b)
+  local a_t = a.theta
+  local b_t = b.theta
+  if b_t < a_t then
+    b_t = b_t + 2*pi
+  end
+  local theta = (b_t + a_t + pi)/2
+  local d = 30
+  
+  return Vector{d * cos(theta-pi/2), d * sin(theta-pi/2)}
+end
+
+--===================================================================================================================
+--cree le chemin de dessin de la coque externe du flubber
+--===================================================================================================================
+function qtDrawShape(self)
+  local path  = Path()
+  local ctrls = Path()
+  --chemin de la coque du flubber
+  local shape = computeOuterShape(self)
+  --le if sert juste a eviter les problemes s'il n'y a pas de liens...
+  if shape then
+    local start_p
+    local p1, p2, p3, p4
+    p4 = shape
+    while true do
+      p1 = p2
+      p2 = p3
+      p3 = p4
+      p4 = p4:nextSegment()
+      if p2 then
+        p3.ctrl = computeCtrlPoint(p2, p3)
+      end
+      if p1 then
+        -- we can start drawing
+        local p2_pos = p2.source_vertex.position
+        local p3_pos = p3.source_vertex.position
+        if not start_p then
+          start_p = p2
+          path:moveTo(p2_pos[1], p2_pos[2])
+        elseif p2 == start_p then
+          break
+        end
+        -- ctrl
+        ctrls:moveTo(p2_pos[1], p2_pos[2])
+        ctrls:lineTo(p2_pos[1]+p2.ctrl[1], p2_pos[2]+p2.ctrl[2])
+        -- curve
+        path:cubicTo(
+          p2_pos[1]+p2.ctrl[1], p2_pos[2]+p2.ctrl[2],
+          p3_pos[1]-p3.ctrl[1], p3_pos[2]-p3.ctrl[2],
+          p3_pos[1],            p3_pos[2])
+      end
+    end
+  end
+  return path, ctrls
+end --qtDrawShape]]
 
 --===================================================================================================================
 --dessine le Flubber a partir des listes de Vertices et d'Edges sur la composante graphique fournie en parametre.
 --le parametre withForces permet d'afficher les forces sur chaque Vertex, disponible pour des raisons de 
 --debug/esthetique
 --===================================================================================================================
-function draw(self, p, withForces, withEdges, withShape)
+function qtDraw(self, p, with_points, with_forces, with_edges, with_shape)
   
-  local path = Path()
-  local forces = Path()
-  local shape_path = Path()
-  
-  --on cree le chemin des liens entre les points
-  for i, edge in ipairs(self.edge_list) do
-    path:moveTo(edge.a_vertex.position[1], edge.a_vertex.position[2])
-    path:lineTo(edge.b_vertex.position[1], edge.b_vertex.position[2])
+  if with_points then
+    local points = qtDrawPoints(self)
+    p:setPen(2, 0.1)
+    p:drawPath(points)
   end
-  
-  --on cree le chemin des points
-  path:moveTo(self.vertex_list[1].position[1], self.vertex_list[1].position[2])
-  for i,vertex in ipairs(self.vertex_list) do
-    
-    path:addRect(vertex.position[1], vertex.position[2], 2, 2)
-    
-    --chemin des forces
-    if withForces then
-      for j, seg in ipairs(vertex) do
-        forces:moveTo(vertex.position[1], vertex.position[2])
-        forces:lineTo(vertex.position[1]+seg.force[1], vertex.position[2]+seg.force[2])
-      end
-    end
-  end
-  
-  --chemin de la coque du flubber
-  local shape = computeOuterShape(self)
-  --le if sert juste a eviter les problemes s'il n'y a pas de liens...
-  if shape then
-    local current = shape
-    local pos = current.source_vertex.position
-    shape_path:moveTo(pos[1], pos[2])
-    while true do
-      current = current:nextSegment()
-      if not current then
-        break
-      else
-        local pos = current.source_vertex.position
-        shape_path:lineTo(pos[1], pos[2])
-      end
-      if current == shape then
-        break
-      end
-    end
-  end
-  
-	if withForces then
+	if with_forces then
+	  local forces = qtDrawForces(self)
   	p:setPen(2, 0.1)
   	p:drawPath(forces)
 	end
-  if withEdges then
+  if with_edges then
+    local path = qtDrawEdges(self)
     p:setPen(0.5, 1, 0.5, 0.5)
     p:drawPath(path)
   end
-  if withShape then
+  if with_shape then
+    local shape_path, ctrls_path = qtDrawShape(self)
     p:setPen(4, 0.5)
     p:setBrush(0.5, 1, 1, 0.3)
     p:drawPath(shape_path)
+    
+    p:setPen(0.9, 0.5)
+    p:setBrush(EmptyBrush)
+    p:drawPath(ctrls_path)
   end
 end --draw]]

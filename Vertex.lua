@@ -27,7 +27,6 @@ local v_count = 0
 --             attribuees
 --===================================================================================================================
 local function new(opts)
-  print(lib.mu_frottement)
   local opts = opts or {}
   v_count = v_count+1
   local self = {position      = opts.position or Vector(),
@@ -62,10 +61,6 @@ function sortSegments(self, condition)
   until n < 1
     
   for i, segment in ipairs(self) do
-    --[[print(
-      'in sort:', i, segment.source_vertex, segment.source_vertex.position, 
-      segment.vector, segment.theta/pi, 
-      segment.target_segment.source_vertex)--]]
     segment.source_index = i
   end
 end --sortSegments]]
@@ -80,7 +75,7 @@ function move(self, delta_t)
     -- a = F/m
     local a = self.force*(1/self.mass)
     -- X = Xo + Vo * t + 1/2 a t^2
-    self.position:addToSelf(self.speed*delta_t+(a*(0.5*delta_t^2)))
+    --self.position:addToSelf(self.speed*delta_t+(a*(0.5*delta_t^2)))
     -- V = Vo + a* t
     self.speed:addToSelf(a*delta_t)
   end
