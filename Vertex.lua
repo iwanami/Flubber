@@ -75,7 +75,7 @@ function move(self, delta_t)
     -- a = F/m
     local a = self.force*(1/self.mass)
     -- X = Xo + Vo * t + 1/2 a t^2
-    --self.position:addToSelf(self.speed*delta_t+(a*(0.5*delta_t^2)))
+    self.position:addToSelf(self.speed*delta_t+(a*(0.5*delta_t^2)))
     -- V = Vo + a* t
     self.speed:addToSelf(a*delta_t)
   end

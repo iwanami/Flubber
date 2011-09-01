@@ -30,8 +30,8 @@ function makeVertex()
 end
 
 
-function makeFlubber()
-  local f = Flubber(-0.2, 70, 100, 300, -5)
+function makeFlubber(hue)
+  local f = Flubber(-0.2, 100, 200, 10000, -0.1, hue)
   local v1, v2, v3, v4 = makeVertex()
   f:addVertex(v1)
   f:addVertex(v2)
@@ -40,10 +40,6 @@ function makeFlubber()
   return f
 end
 
-Selection_Dist = 15
-Drag_Dist = 10
-
-
 app = mimas.Application()
 win = mimas.Window()
 win:setMouseTracking(true)
@@ -51,29 +47,18 @@ point_choisi = {}
 is_dragging = false
 mouse = {xCoord=0, yCoord=0}
 
-flub = makeFlubber()
+flub  = makeFlubber(0.5)
+flub2 = makeFlubber(0.9)
 
-local function manhattanDist(a, x, y)
-  return math.abs(x - a[1]) + math.abs(y - a[2])
-end
-
-function win.click(x, y, type) --(x, y, type, btn, mod) --type: mimas.MousePress, MouseRelease, DoubleClick
+function win.click(x, y, type, btn, mod) --(x, y, type, btn, mod) --type: mimas.MousePress, MouseRelease, DoubleClick
   -- si la souris est enfoncee
   if type==mimas.MousePress then
-    --verifie si un point est a proximite
-    for i, vertex in ipairs(flub.vertex_list) do
-      if manhattanDist(vertex.position, x, y) < Selection_Dist then
-        dragged_vertex = vertex
-        vertex.dragged = true
-        break
-      end
-    end
-    --si un point a ete choisi dans la boucle, on sauve ses coordonnees d'origine
-    if dragged_vertex then
-      -- dragging
+    if mod == mimas.ShiftModifier then
+      dragged_vertex = flub2:click(x, y)
     else
-      dragged_vertex = flub:addVertexFromPosition(Vector{x, y})
+      dragged_vertex = flub:click(x,y)
     end
+    dragged_vertex.dragged = true
   -- si la souris est relachee
   elseif type==mimas.MouseRelease then
     --le relachement a lieu pendant un drag, on remet a false le drag, et on reinitialise le point selectionne
@@ -83,7 +68,6 @@ function win.click(x, y, type) --(x, y, type, btn, mod) --type: mimas.MousePress
     end
     win:update()
   end
-
 end
 
 function win.mouse(x, y)
@@ -99,7 +83,22 @@ function win.paint(p, w, h)
   
   --calcul des liens entre les points
   flub:update()
-  flub:qtDraw(p, true, true, true, true)
+  flub:qtDraw(p, 
+    false, -- points
+    false, -- force
+    true, -- edges
+    true,  -- shape
+    false  -- bezier ctrl
+  )
+  
+  flub2:update()
+  flub2:qtDraw(p, 
+    false, -- points
+    false, -- force
+    true, -- edges
+    true,  -- shape
+    false  -- bezier ctrl
+  )
 
 	win:update()
 end

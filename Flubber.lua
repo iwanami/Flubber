@@ -26,6 +26,11 @@ local cos = math.cos
 local Path = mimas.Path
 local flush = io.flush
 local EmptyBrush = mimas.EmptyBrush
+local abs = math.abs
+
+local Selection_Dist = 15
+local Drag_Dist = 10
+
 --parametrage de l'environnement
 setfenv(1, lib)
 
@@ -45,7 +50,7 @@ setfenv(1, lib)
 --           - les arguments doivent etre passes par noms. s'il ne sont pas renseignes, des valeurs par defaut sont 
 --             attribuees
 --===================================================================================================================
-function new(elasticity, stable_distance, glue, cut, mu, opts)
+function new(elasticity, stable_distance, glue, cut, mu, hue, opts)
   Vertex.mu_frottement = mu or -0.2
   local opts = opts or {}
   local self = {vertex_list     = opts.vertex_list or {},
@@ -57,7 +62,8 @@ function new(elasticity, stable_distance, glue, cut, mu, opts)
                 Stable_Distance = stable_distance,
                 Compression     = -(stable_distance^2 * elasticity),
                 Glue            = glue,
-                Cut             = cut,}
+                Cut             = cut,
+                hue             = hue or 0.5}
   return setmetatable(self, lib)
 end --new]]
 
@@ -295,15 +301,19 @@ end --qtDrawForces]]
 --===================================================================================================================
 --calcule et renvoie le point de controle de la courbe de bezier pour le point b
 --===================================================================================================================
-function computeCtrlPoint(a, b)
+function computeCtrlPoint(self, a, b)
   local a_t = a.theta
   local b_t = b.theta
   if b_t < a_t then
     b_t = b_t + 2*pi
   end
-  local theta = (b_t + a_t + pi)/2
-  local d = 30
-  
+  local theta = (b_t + a_t)/2
+  if b_t - a_t > pi then
+    theta = theta - pi/2
+  else
+    theta = theta + pi/2
+  end
+  local d = self.Stable_Distance * 0.5
   return Vector{d * cos(theta-pi/2), d * sin(theta-pi/2)}
 end
 
@@ -326,7 +336,7 @@ function qtDrawShape(self)
       p3 = p4
       p4 = p4:nextSegment()
       if p2 then
-        p3.ctrl = computeCtrlPoint(p2, p3)
+        p3.ctrl = computeCtrlPoint(self, p2, p3)
       end
       if p1 then
         -- we can start drawing
@@ -357,8 +367,8 @@ end --qtDrawShape]]
 --le parametre withForces permet d'afficher les forces sur chaque Vertex, disponible pour des raisons de 
 --debug/esthetique
 --===================================================================================================================
-function qtDraw(self, p, with_points, with_forces, with_edges, with_shape)
-  
+function qtDraw(self, p, with_points, with_forces, with_edges, with_shape, with_ctrls)
+  local hue = (self.hue + (worker:now() / 20000)) % 1.0
   if with_points then
     local points = qtDrawPoints(self)
     p:setPen(2, 0.1)
@@ -371,17 +381,33 @@ function qtDraw(self, p, with_points, with_forces, with_edges, with_shape)
 	end
   if with_edges then
     local path = qtDrawEdges(self)
-    p:setPen(0.5, 1, 0.5, 0.5)
+    p:setPen(0.5, hue, 0.5, 0.5)
     p:drawPath(path)
   end
   if with_shape then
     local shape_path, ctrls_path = qtDrawShape(self)
-    p:setPen(4, 0.5)
-    p:setBrush(0.5, 1, 1, 0.3)
+    p:setPen(4, hue)
+    p:setBrush(hue, 1, 1, 0.3)
     p:drawPath(shape_path)
-    
-    p:setPen(0.9, 0.5)
+  end
+  if with_ctrls then
+    p:setPen(0.9, hue)
     p:setBrush(EmptyBrush)
     p:drawPath(ctrls_path)
   end
 end --draw]]
+
+local function manhattanDist(a, x, y)
+  return abs(x - a[1]) + abs(y - a[2])
+end
+
+function click(self, x, y)
+  --verifie si un point est a proximite
+  for i, vertex in ipairs(self.vertex_list) do
+    if manhattanDist(vertex.position, x, y) < Selection_Dist then
+      return vertex
+    end
+  end
+  --si un point a ete choisi dans la boucle, on sauve ses coordonnees d'origine
+  return self:addVertexFromPosition(Vector{x, y})
+end
