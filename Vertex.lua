@@ -45,7 +45,7 @@ lib.__index = lib
 --trie les segments afin de pouvoir les parcourir correctement lors de la recherche de la forme du flubber
 --===================================================================================================================
 function sortSegments(self, condition)
-  print('sort', self)
+  --print('sort', self)
   local n = #self
   local new_n
   repeat
@@ -60,10 +60,10 @@ function sortSegments(self, condition)
   until n < 1
     
   for i, segment in ipairs(self) do
-    print(
+    --[[print(
       'in sort:', i, segment.source_vertex, segment.source_vertex.position, 
       segment.vector, segment.theta/pi, 
-      segment.target_segment.source_vertex)
+      segment.target_segment.source_vertex)--]]
     segment.source_index = i
   end
 end --sortSegments]]

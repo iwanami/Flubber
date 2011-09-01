@@ -1,6 +1,8 @@
 --===================================================================================================================
 --insere l'objet dans la liste s'il n'y est pas encore
 --===================================================================================================================
+local remove = table.remove
+local insert = table.insert
 function insertIfNotExists(list, item)
   local exists = false
   for _, s in ipairs(list) do

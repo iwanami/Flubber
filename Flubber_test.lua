@@ -107,7 +107,7 @@ function win.paint(p, w, h)
   
   --calcul des liens entre les points
   flub:update()
-  flub:draw(p, false)
+  flub:draw(p, true)
 
 	win:update()
 end

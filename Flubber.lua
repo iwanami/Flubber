@@ -82,6 +82,49 @@ function addVertexFromPosition(self, position)
   self:addVertex(v)
 end --addVertexFromPosition]]
 
+--===================================================================================================================
+--verifie si les segments entre deux couples de vertex se croisent
+--===================================================================================================================
+function doesCrossWithExistingEdge(self, v1, v2)
+  local a = v1.position
+  local b = v2.position
+  local ab = b-a
+  
+  for i, e in ipairs(self.edge_list) do
+    local cv = e.a_vertex
+    local dv = e.b_vertex
+    if cv == v1 or cv == v2 or dv == v1 or dv == v2 then
+      -- skip
+    else
+      local c = cv.position
+      local d = dv.position
+      local cd = e.a_segment.vector
+      if Vector.segmentIntersects(a, b, ab, c, d, cd) then
+        return true
+      end
+    end
+  end
+  return false
+  
+  
+end --doesCrossWithExistingEdge]]
+function doesCrossOtherEdge(self, edge)
+  local a = edge.a_vertex.position
+  local b = edge.b_vertex.position
+  local ab = edge.a_segment.vector
+  
+  for i, e in ipairs(self.edge_list) do
+    if e ~= edge then
+      local c = e.a_vertex.position
+      local d = e.b_vertex.position
+      local cd = e.a_segment.vector
+      if Vector.segmentIntersects(a, b, ab, c, d, cd) then
+        return true
+      end
+    end
+  end
+  return false
+end --doesCrossOtherEdge]]
 
 --===================================================================================================================
 --Met a jour la liste des Edges par la methode des distances
@@ -97,7 +140,7 @@ local function computeEdges(self)
       local vect = other_vertex.position-vertex.position
       local norm = vect:norm()
       --si la norme du vecteur est dans la portee de la distance de connection, on ajoute un nouveau lien a la table
-      if  norm <= self.Glue and not edge then
+      if  norm <= self.Glue and not edge and not doesCrossWithExistingEdge(self, vertex, other_vertex) then
         edge = Edge{a_vertex = vertex, b_vertex = other_vertex}
         insert(self.edge_list, edge)
         insert(vertex, edge.a_segment)
@@ -106,7 +149,7 @@ local function computeEdges(self)
         insert(self.segment_list, edge.b_segment)
         row[j] = edge
         --si la norme est plus grande que le seuil de rupture, on supprime le lien
-      elseif norm > self.Cut and edge then
+      elseif edge and (norm > self.Cut or doesCrossOtherEdge(self, edge)) then
         row[j] = nil
         removeIfExists(self.edge_list, edge)
         removeIfExists(vertex, edge.a_segment)
@@ -168,7 +211,7 @@ local function tryShape(segment, mark)
   local current = segment
   local count = 0
   while true do
-    print("tryShape:", current)
+    --print("tryShape:", current)
     current = current:nextSegment()
     if not current or current == segment then
       break
@@ -177,7 +220,7 @@ local function tryShape(segment, mark)
       count = count + 1
     end
   end
-  print(count)
+  --print(count)
   return count
 end --computeShape]]
 
@@ -187,14 +230,14 @@ end --computeShape]]
 --===================================================================================================================
 local function computeOuterShape(self)
   sortAllSegments(self)
-  print('in computeOuterShape - list of all Vertices:')
+  --[[print('in computeOuterShape - list of all Vertices:')
   for i, v in ipairs(self.vertex_list) do
     print('vertex:',v , v.position)
     for j, s in ipairs(v) do
       print('target:', s.target_segment.source_vertex.position, 'angle:', s.theta/pi..' π')
       flush()
     end
-  end
+  end--]]
   local max_count = 0
   local result
   local mark = worker:now()
@@ -207,7 +250,7 @@ local function computeOuterShape(self)
       end
     end
   end
-  print(result)
+  --print(result)
   return result
 end
 

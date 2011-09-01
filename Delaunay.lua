@@ -26,7 +26,29 @@ setmetatable(lib, {__call = function(lib, ...) return new(...) end})
 lib.__index = lib
 
 --===================================================================================================================
---indique si le point se trouve sur, a l'exterieur ou dans le cercle circonscrit du triangle fourni en parametre
---remarques: - la fonction renvoie 1 si le point est a l'exterieur, 0 s'il se trouve dessus et -1 s'il est a
---             l'interieur
+--ajoute un vertex a la liste deja existante et calcule la nouvelle triangulation
 --===================================================================================================================
+function addVertex(self, pt)
+  
+end --addVertex]]
+
+--===================================================================================================================
+--renvoie le triangle qui contient le point
+--===================================================================================================================
+function locate(self, pt)
+  
+end --locate]]
+
+--===================================================================================================================
+--ajoute un vertex a la liste deja existante et calcule la nouvelle triangulation
+--===================================================================================================================
+function getCavity(self, pt, triangle)
+  
+end --getCavity]]
+
+--===================================================================================================================
+--ajoute un vertex a la liste deja existante et calcule la nouvelle triangulation
+--===================================================================================================================
+function update(self, pt, cavity)
+  
+end --addVertex]]

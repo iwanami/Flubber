@@ -197,12 +197,36 @@ function onTriangle(self, triangle)
   
   if (u > 0) and (v > 0) and (u+v <= 1) then
     return -1
-  elseif (u == 0) or (v == 0) and (u+v) then
+  elseif (u == 0) or (v == 0) and (u+v <= 1) then
     return 0
   else
     return 1
   end
   
+end
+
+function segmentIntersects(a, b, ab, c, d, cd)
+  
+  local t1, t2
+  
+  local t2_denom = (cd[2]*ab[1] - cd[1]*ab[2])
+  local t1_denom = ab[1]
+  
+  --print(t1_denom, t2_denom)
+  
+  if t1_denom ~= 0 and t_2denom ~= 0 then
+    t2 = ((a[2]-c[2])*ab[1] + (c[1]-a[1])*ab[2])/t2_denom
+    t1 = (c[1]-a[1] + t2*cd[1])/t1_denom
+  else
+    return false
+  end
+
+  --print('t1:', t1, 't2:', t2)
+
+  if t1 >= 0 and t2 >= 0 and t1 <= 1 and t2 <= 1 then
+    --print('prout')
+    return true
+  end
 end
 
 
