@@ -8,14 +8,12 @@ local lib = {}
 Edge      = lib
 --copie locale des fonctions standard utilisees
 local setmetatable = setmetatable
-local insert = table.insert
-local remove = table.remove
-local Segment = Segment
-local Vertex = Vertex
-local Vector = Vector
-local Segment = Segment
-local print = print
-local ipairs = ipairs
+local insert       = table.insert
+local remove       = table.remove
+local Segment      = Segment
+local Vertex       = Vertex
+local Vector       = Vector
+local ipairs       = ipairs
 --parametrage de l'environnement
 setfenv(1, lib)
 
@@ -32,6 +30,7 @@ function new(opts)
                 b_segment = opts.b_segment or Segment(),
                 a_vertex  = opts.a_vertex or Vertex(),
                 b_vertex  = opts.b_vertex or Vertex(),}
+  --attribution des segments cibles et des vertex sources aux segments du lien
   self.a_segment.target_segment = self.b_segment
   self.a_segment.source_vertex  = self.a_vertex
   self.b_segment.target_segment = self.a_segment
@@ -44,10 +43,6 @@ end --new]]
 setmetatable(lib, {__call = function(lib, ...) return new(...) end})
 lib.__index = lib
 
-
-
-
-
 --===================================================================================================================
 --met a jour les segments de force de l'arete
 --===================================================================================================================
@@ -59,6 +54,7 @@ function updateSegments(self, elasticity, compression)
   --calcul de la force s'appliquant sur les vertices
   local f = v1*(elasticity + (compression / norm^2))
   
+  --attribution des forces et calcul des composantes polaires
   self.a_segment.vector = v1
   self.a_segment.force = -f
   self.a_segment:computePolar()

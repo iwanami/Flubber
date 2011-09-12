@@ -9,8 +9,7 @@ Vertex.mu_frottement = -0.1
 local setmetatable = setmetatable
 local ipairs       = ipairs
 local Vector       = Vector
-local print = print
-local pi = math.pi
+local pi           = math.pi
 --parametrage de l'environnement
 setfenv(1, lib)
 
@@ -21,6 +20,9 @@ local v_count = 0
 --contient: - la position du vertex
 --          - la force resultante sur le vertex
 --          - la vitesse du vertex. utilise pour la force resultante
+--          - le coefficient de frottement du vertex
+--          - la masse du vertex
+--          - un nom, servant a l'identification lors du debug
 --          - une liste de segments
 --remarques: - le vertex lui-meme est la liste de segments. ils seront donc indices comme d'habitude dans lua
 --           - les arguments doivent etre passes par noms. s'il ne sont pas renseignes, des valeurs par defaut sont 
@@ -43,10 +45,10 @@ setmetatable(lib, {__call = function(lib, ...) return new(...) end})
 lib.__index = lib
 
 --===================================================================================================================
---trie les segments afin de pouvoir les parcourir correctement lors de la recherche de la forme du flubber
+--trie les segments afin de pouvoir les parcourir correctement lors de la recherche de la forme du flubber. la 
+--condition de tri doit etre fournie en parametre (fonction a deux parametres)
 --===================================================================================================================
 function sortSegments(self, condition)
-  --print('sort', self)
   local n = #self
   local new_n
   repeat

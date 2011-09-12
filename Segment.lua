@@ -7,24 +7,23 @@ local lib = {type = 'Segment'}
 Segment    = lib
 --copie locale des fonctions standard utilisees
 local setmetatable = setmetatable
-local Vector = Vector
-local Vertex = Vertex
-local print = print
+local Vector       = Vector
+local Vertex       = Vertex
 --parametrage de l'environnement
 setfenv(1, lib)
 
 --===================================================================================================================
 --cree un nouvel objet Segment
 --contient: - l'index de positionnement du segment dans le vertex source
---          - l'index de positionnement du prochain segment dans le vertex cible
---          - le vertex cible
+--          - le vertex source
+--          - le segment cible
 --          - la norme de la force representee par le segment
 --          - l'angle de la coordonnee polaire de la force representee par le segment
 --          - la force representee par le segment
 --remarques: - les arguments doivent etre passes par noms. s'il ne sont pas renseignes, des valeurs par defaut sont 
 --             attribuees
 --===================================================================================================================
-local function new(vertex1, vertex2)
+local function new(opts)
   local opts = opts or {}
   local self = {source_index   = opts.source_index or 0,
                 source_vertex  = opts.source_vertex or Vertex(),
@@ -53,6 +52,7 @@ end--computePolar]]
 --===================================================================================================================
 function nextSegment(self)
   local target = self.target_segment
+  --si le vertex n'a qu'un seul lien, on le renvoie directement
   local target_segment_count = #target.source_vertex
   if target_segment_count == 1 then
     return target
@@ -60,4 +60,4 @@ function nextSegment(self)
   
   local next_index = (target.source_index % target_segment_count) + 1
   return target.source_vertex[next_index]
-end
+end --nextSegment]]

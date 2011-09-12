@@ -39,8 +39,9 @@ end --newFromVertices]]
 --additionne les deux vecteurs et renvoie le resultat
 --===================================================================================================================
 function add(self, b)
-  return new{self[1]+b[1],
-             self[2]+b[2],
+  return new{
+    self[1]+b[1],
+    self[2]+b[2],
   }
 end --add]]
 
@@ -58,8 +59,9 @@ end --sub]]
 --multiplie le vecteur par la valeur fournie et renvoie le resultat
 --===================================================================================================================
 function mult(self, lambda)
-  return new{self[1]*lambda,
-             self[2]*lambda,
+  return new{
+    self[1]*lambda,
+    self[2]*lambda,
   }
 end --mult]]
 
@@ -67,8 +69,9 @@ end --mult]]
 --additionne les deux vecteurs et renvoie le resultat
 --===================================================================================================================
 function negate(self)
-  return new{-self[1],
-             -self[2],
+  return new{
+    -self[1],
+    -self[2],
   }
 end --negate]]
 
@@ -148,7 +151,7 @@ end --__tostring]]
 --remarques: - la fonction renvoie 1 si le point est a l'exterieur, 0 s'il se trouve dessus et -1 s'il est a
 --             l'interieur
 --===================================================================================================================
-function onCircumcicle(self, triangle)
+function onCircumcircle(self, triangle)
   local a = triangle[1].position
   local b = triangle[2].position
   local c = triangle[3].position
@@ -168,12 +171,12 @@ function onCircumcicle(self, triangle)
   --calcul de la distance entre l'orthocentre et le point
   local dist_po = (o-self):norm()
   
-  if dist_po > rayon then return 1
+  if dist_po < rayon then return -1
   elseif dist_po == rayon then return 0
-  else return -1
+  else return 1
   end
   
-end
+end --onCircumcircle]]
 
 --===================================================================================================================
 --indique si le point se trouve sur, a l'exterieur ou dans le triangle fourni en parametre
@@ -203,16 +206,15 @@ function onTriangle(self, triangle)
     return 1
   end
   
-end
+end --onTriangle]]
 
+--===================================================================================================================
+--indique si les segments entre les points a, b et c, d se croisent
+--===================================================================================================================
 function segmentIntersects(a, b, ab, c, d, cd)
-  
   local t1, t2
-  
   local t2_denom = (cd[2]*ab[1] - cd[1]*ab[2])
   local t1_denom = ab[1]
-  
-  --print(t1_denom, t2_denom)
   
   if t1_denom ~= 0 and t_2denom ~= 0 then
     t2 = ((a[2]-c[2])*ab[1] + (c[1]-a[1])*ab[2])/t2_denom
@@ -221,13 +223,11 @@ function segmentIntersects(a, b, ab, c, d, cd)
     return false
   end
 
-  --print('t1:', t1, 't2:', t2)
-
   if t1 > 0 and t2 > 0 and t1 < 1 and t2 < 1 then
-    --print('prout')
     return true
   end
-end
+  return false
+end --segmentIntersects]]
 
 
 --===================================================================================================================
@@ -235,4 +235,4 @@ end
 --===================================================================================================================
 function dot(vector1, vector2)
   return vector1[1]*vector2[1]+vector1[2]*vector2[2]
-end
+end --dot]]

@@ -51,16 +51,6 @@ flub = makeFlubber()
 flub:update()
 shape = flub:computeOuterShape()
 
---[[function should.haveShape()
-  local flub = makeFlubber()
-  flub:update()
-  local shape = flub:computeOuterShape()
-  
-  for i, v in ipairs(shape) do
-    print(v.position)
-  end
-
-end--]]
 
 function win.paint(p, w, h)
   local path = mimas.Path()

@@ -4,14 +4,12 @@
 local remove = table.remove
 local insert = table.insert
 function insertIfNotExists(list, item)
-  local exists = false
   for _, s in ipairs(list) do
     if item == s then 
-      exists = true
-      break
+      return
     end
   end
-  if not exists then insert(list, item) end
+  insert(list, item)
 end --insertIfNotExists]]
 
 
