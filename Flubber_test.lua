@@ -1,11 +1,11 @@
 require 'lubyk'
 require 'Flubber'
 
-local should = test.Suite("Flubber")
+local White = mimas.colors.White
 
 
 function makeVertex()
-  local v1 = Vertex{position      = Vector{100, 300},
+  local v1 = Vertex{position      = Vector{100, 200},
                     force         = Vector(),
                     speed         = Vector(),
                     mu_frottement = -0.2,
@@ -15,12 +15,12 @@ function makeVertex()
                     speed         = Vector(),
                     mu_frottement = -0.2,
                     mass          = 0.2,}
-  local v3 = Vertex{position      = Vector{300, 100},
+  local v3 = Vertex{position      = Vector{200, 100},
                     force         = Vector(),
                     speed         = Vector(),
                     mu_frottement = -0.2,
                     mass          = 0.2,}
-  local v4 = Vertex{position      = Vector{300, 300},
+  local v4 = Vertex{position      = Vector{200, 200},
                     force         = Vector(),
                     speed         = Vector(),
                     mu_frottement = -0.2,
@@ -31,7 +31,10 @@ end
 
 
 function makeFlubber(hue)
-  local f = Flubber(-0.2, 100, 200, 10000, -0.1, hue)
+  local f = Flubber(-0.2, --elasticity
+                    100, --stable distance
+                    -0.05, --coefficient de frottement
+                    hue) --couleur
   local v1, v2, v3, v4 = makeVertex()
   f:addVertex(v1)
   f:addVertex(v2)
@@ -80,24 +83,26 @@ end
 
 function win.paint(p, w, h)
   
+  p:fillRect(0, 0, w, h, White)
   
   --calcul des liens entre les points
   flub:update()
-  flub:qtDraw(p, 
+  flub:qtWoodstockDraw(p, 
     false, -- points
     false, -- force
-    true, -- edges
+    false, -- edges
     true,  -- shape
-    true  -- bezier ctrl
+    false,  -- bezier ctrl
+    20 --color cycle time
   )
   
   flub2:update()
   flub2:qtDraw(p, 
     false, -- points
     false, -- force
-    true, -- edges
+    false, -- edges
     true,  -- shape
-    true  -- bezier ctrl
+    false  -- bezier ctrl
   )
 
 	win:update()
@@ -107,4 +112,3 @@ end
 win:show()
 app:exec()
 
---test.all()

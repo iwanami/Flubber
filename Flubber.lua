@@ -26,7 +26,6 @@ local cos            = math.cos
 local abs            = math.abs
 local Path           = mimas.Path
 local EmptyBrush     = mimas.EmptyBrush
-local print = print
 
 --constantes de selection et de drag, servant a deplacer les vertex du flubber
 local Selection_Dist = 15
@@ -49,15 +48,18 @@ setfenv(1, lib)
 --          - l'elasticite du flubber*
 --          - la distance de stabilite entre deux noeuds du flubber*
 --          - la compression du flubber, calculee a partir de l'elasticite et de la distance de stabilite
---          - La distance de creation de lien entre deux vertex (Glue)*
---          - La distance de destruction de lien entre deux vertex (Cut)*
+--          - La distance de creation de lien entre deux vertex (Glue)
+--          - La distance de destruction de lien entre deux vertex (Cut)
 --remarques: - la matrice est triangulaire superieure: les distances sont symetriques et la distance au noeud lui-meme
 --             est nulle.
 --           - les arguments doivent etre passes par noms. s'il ne sont pas renseignes, des valeurs par defaut sont 
 --             attribuees
+--           - pour une plus grande credibilite de l'apparence du flubber, les distances glue et cut sont calculees
+--             a partir de la distance de stabilite
 --           - les parametres marques d'un "*" dans la liste ci-dessus doivent etre renseignes a la creation
+--           - renseigner le force de frottemnt
 --===================================================================================================================
-function new(elasticity, stable_distance, glue, cut, mu, hue, opts)
+function new(elasticity, stable_distance, mu, hue, opts)
   Vertex.mu_frottement = mu or Mu_Frottement
   local opts = opts or {}
   local self = {vertex_list     = opts.vertex_list or {},
@@ -68,8 +70,8 @@ function new(elasticity, stable_distance, glue, cut, mu, hue, opts)
                 Elasticity      = elasticity,
                 Stable_Distance = stable_distance,
                 Compression     = -(stable_distance^2 * elasticity),
-                Glue            = glue,
-                Cut             = cut,
+                Glue            = stable_distance,
+                Cut             = stable_distance^3,
                 hue             = hue or Hue}
   return setmetatable(self, lib)
 end --new]]
@@ -298,14 +300,6 @@ function qtDrawForces(self)
   return path
 end --qtDrawForces]]
 
---===================================================================================================================
---calcule la distance au point de controle d'une courbe de bezier en fonction de l'angle entre les vecteurs du contour
---===================================================================================================================
-function computeCtrlDistance(ctrl_vect, half_a_norm, angle)
-  return 1
-end --computeCtrlDistance]]
-
-
 
 --===================================================================================================================
 --calcule et renvoie le point de controle de la courbe de bezier pour le point b (a est le point precedent)
@@ -330,7 +324,7 @@ function computeCtrlPoint(self, a, b)
   --ctrl_vect = Vector{cos(theta-pi/2), sin(theta-pi/2)}
   local edge_vect = b.source_vertex.position-a.source_vertex.position
   --local d = (edge_vect:norm())/2*cos(theta)
-  local d = dot(ctrl_vect, edge_vect)/2
+  local d = dot(ctrl_vect, edge_vect)*0.5
   return ctrl_vect*abs(d)
 end --computeCtrlPoint]]
 
@@ -412,7 +406,7 @@ function qtDraw(self, p, with_points, with_forces, with_edges, with_shape, with_
   if with_shape then
     local shape_path, ctrls_path = qtDrawShape(self)
     p:setPen(4, hue)
-    p:setBrush(hue, 1, 1, 0.3)
+    p:setBrush(hue, 1, 1, 0.5)
     p:drawPath(shape_path)
     --dessin des vecteurs de controle des courbes de bezier
     if with_ctrls then
@@ -428,10 +422,11 @@ end --qtDraw]]
 --dessine le Flubber a partir des listes de Vertices et d'Edges sur la composante graphique fournie en parametre.
 --le parametre withForces permet d'afficher les forces sur chaque Vertex, disponible pour des raisons de 
 --debug/esthetique (version QT)
---Cette version change la couleur du flubber a chaque appel
+--Cette version change la couleur du flubber a chaque appel. le cycle_time est le temps que prend le flubber a passer
+--par toutes les couleurs (en secondes)
 --===================================================================================================================
-function qtWoodstockDraw(self, p, with_points, with_forces, with_edges, with_shape, with_ctrls)
-  self.hue = (self.hue + (worker:now() / 20000)) % 1.0
+function qtWoodstockDraw(self, p, with_points, with_forces, with_edges, with_shape, with_ctrls, cycle_time)
+  self.hue = (worker:now() / (cycle_time*1000)) % 1.0
   qtDraw(self, p, with_points, with_forces, with_edges, with_shape, with_ctrls)
 end --qtWoodstockDraw]]
 
