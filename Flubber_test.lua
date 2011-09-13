@@ -43,6 +43,20 @@ function makeFlubber(hue)
   return f
 end
 
+function makeFlubberWithRandomPoints(number)
+    local f = Flubber(-0.2, 200, -0.1, 0.5)
+    local v
+    for i = 0, number do
+      v = Vertex{position     = Vector{math.random(200), math.random(200)},
+                        force         = Vector(),
+                        speed         = Vector(),
+                        mu_frottement = -0.2,
+                        mass          = 0.2,}
+      f:addVertex(v)
+    end
+    return f
+end
+
 app = mimas.Application()
 win = mimas.Window()
 win:setMouseTracking(true)
@@ -50,8 +64,9 @@ point_choisi = {}
 is_dragging = false
 mouse = {xCoord=0, yCoord=0}
 
-flub  = makeFlubber(0.5)
-flub2 = makeFlubber(0.9)
+--flub  = makeFlubber(0.5)
+--flub2 = makeFlubber(0.9)
+flub = makeFlubberWithRandomPoints(15)
 
 function win.click(x, y, type, btn, mod) --(x, y, type, btn, mod) --type: mimas.MousePress, MouseRelease, DoubleClick
   -- si la souris est enfoncee
@@ -90,20 +105,20 @@ function win.paint(p, w, h)
   flub:qtWoodstockDraw(p, 
     false, -- points
     false, -- force
-    false, -- edges
-    true,  -- shape
-    false,  -- bezier ctrl
-    20 --color cycle time
+    true, -- edges
+    true, -- shape
+    false, -- bezier ctrl
+    20    --color cycle time
   )
   
-  flub2:update()
-  flub2:qtDraw(p, 
+  --flub2:update()
+  --[[flub2:qtDraw(p, 
     false, -- points
     false, -- force
     false, -- edges
     true,  -- shape
     false  -- bezier ctrl
-  )
+  )--]]
 
 	win:update()
 end
