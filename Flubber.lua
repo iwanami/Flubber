@@ -39,11 +39,11 @@ setfenv(1, lib)
 
 --===================================================================================================================
 --cree un nouvel objet Flubber
---l'elasticite et la distance sont des parametres obligatoires, ainsi que glue et cut, qui sont les distances de
---creation et de destruction, respectivement, d'un lien (pas utilises si flub est renseigne, peuvent etre nil)
+--l'elasticite et la distance sont des parametres obligatoires
 --contient: - une liste de noeuds (Vertex)
 --          - une liste d'aretes (Edge)
 --          - une matrice d'adjacence sommets-sommets
+--          - une liste de segments
 --          - un time stamp pour determiner le dernier temps utilise dans les calculs
 --          - l'elasticite du flubber*
 --          - la distance de stabilite entre deux noeuds du flubber*
@@ -57,7 +57,7 @@ setfenv(1, lib)
 --           - pour une plus grande credibilite de l'apparence du flubber, les distances glue et cut sont calculees
 --             a partir de la distance de stabilite
 --           - les parametres marques d'un "*" dans la liste ci-dessus doivent etre renseignes a la creation
---           - renseigner le force de frottemnt
+--           - renseigner le force de frottemnt modifie celle par defaut de la classe Vertex
 --===================================================================================================================
 function new(elasticity, stable_distance, mu, hue, opts)
   Vertex.mu_frottement = mu or Mu_Frottement

@@ -14,7 +14,7 @@ end --insertIfNotExists]]
 
 
 --===================================================================================================================
---met a jour les segments de force de l'arete
+--supprime l'objet de la liste s'il existe
 --===================================================================================================================
 function removeIfExists(list, item)
   for i, s in ipairs(list) do

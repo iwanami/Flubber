@@ -1,0 +1,71 @@
+1) Introduction:
+  L'objectif de ce projet est de modeliser un corps mou (Flubber).
+  Le flubber est composé de sommets (Vertex), reliés par des arêtes (Edge). Les arêtes se comportent comme des ressorts. Les liens entre les vertex ne sont pas fixes.
+  Les forces appliquées aux vertex sont contenus dans des segments de force (Segment). Le but de ces segments, au-delà de contenir une force, est aussi de parcourir le flubber, et ainsi déterminer son contour.
+  Les forces sont representées par un vecteur (Vector). il est possible d'utiliser un vector comme une coordonnée cartésienne
+
+2) Prérequis:
+  Pour pouvoir lancer le flubber, il est requis d'avoir installé:
+    - Lua (disponible sur lua.org)
+    - Lubyk (disponible sur lubyk.org)
+  
+3) Installation et execution:
+  depuis le terminal, aller dans le dossier contenant les sources, et entrer la commande:
+    > lua flubber_test.lua
+  
+4) Les classes:
+
+  4.1) Vector:
+    --contient: - la valeur selon l'axe x avec comme cle 1
+    --          - la valeur selon l'axe y avec comme cle 2
+    --remarques: - on peut utiliser Vector comme un point du plan en utilisant les composantes comme des coordonnes
+    --           - le vecteur est nul s'il n'est pas reseigne a la creation
+    
+  4.2) Vertex:
+    --contient: - position:      la position du vertex
+    --          - force:         la force resultante sur le vertex
+    --          - speed:         la vitesse du vertex. utilise pour la force resultante
+    --          - mu_frottement: le coefficient de frottement du vertex
+    --          - mass:          la masse du vertex
+    --          - name:          un nom, servant a l'identification lors du debug
+    --          - une liste de segments
+    --remarques: - le vertex lui-meme est la liste de segments. ils seront donc indices comme d'habitude dans lua
+    
+  4.3) Edge:
+    --contient: - a_vertex, b_vertex:   les deux vertex adjacents
+    --          - a_segment, b_segment: les segments de force associes aux sommets
+    
+  4.4) Segment:
+  --contient: - source_index:   l'index de positionnement du segment dans le vertex source
+  --          - source_vertex:  le vertex source
+  --          - target_segment: le segment cible
+  --          - norm:           la norme de la force representee par le segment
+  --          - theta:          l'angle de la coordonnee polaire de la force representee par le segment
+  --          - force:          la force representee par le segment
+
+  4.5) Flubber:
+    --l'elasticite et la distance sont des parametres obligatoires
+    --contient: - vertex_list:     une liste de noeuds (Vertex)
+    --          - edge_list:       une liste d'aretes (Edge)
+    --          - edge_matrix:     une matrice d'adjacence sommets-sommets
+    --          - segment_list:    une liste des segments s'appliquant sur les vertex du flubber
+    --          - last_time:       un time stamp pour determiner le dernier temps utilise dans les calculs
+    --          - Elasticity:      l'elasticite du flubber*
+    --          - Stable_Distance: la distance de stabilite entre deux noeuds du flubber*
+    --          - Compression:     la compression du flubber, calculee a partir de l'elasticite et de la distance de stabilite
+    --          - Glue:            La distance de creation de lien entre deux vertex (Glue)
+    --          - Cut:             La distance de destruction de lien entre deux vertex (Cut)
+    --remarques: - la matrice est triangulaire superieure: les distances sont symetriques et la distance au noeud lui-meme est nulle.
+    --           - les arguments doivent etre passes par noms. s'il ne sont pas renseignes, des valeurs par defaut sont  attribuees
+    --           - pour une plus grande credibilite de l'apparence du flubber, les distances glue et cut sont calculees a partir de la distance de stabilite
+    --           - les parametres marques d'un "*" dans la liste ci-dessus doivent etre renseignes a la creation
+    --           - renseigner le force de frottemnt modifie celle par defaut de la classe Vertex
+    
+5) Divers:
+  5.1) util.lua:
+    - contient deux fonctions gestion de tableau:
+      -removeIfExists: enleve l'element du tableau s'il est present
+      -insert if not exists: insere l'element dans le tableau s'il n'existe pas encore dedans
+  
+  5.2) tests:
+    - chaque classe possède un code de test
