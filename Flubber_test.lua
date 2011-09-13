@@ -88,7 +88,7 @@ function win.paint(p, w, h)
     false, -- force
     true, -- edges
     true,  -- shape
-    false  -- bezier ctrl
+    true  -- bezier ctrl
   )
   
   flub2:update()
@@ -97,7 +97,7 @@ function win.paint(p, w, h)
     false, -- force
     true, -- edges
     true,  -- shape
-    false  -- bezier ctrl
+    true  -- bezier ctrl
   )
 
 	win:update()

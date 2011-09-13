@@ -16,6 +16,7 @@ local insert         = table.insert
 local remove         = table.remove
 local Edge           = Edge
 local Vector         = Vector
+local dot            = Vector.dot
 local Vertex         = Vertex
 local worker         = worker
 local removeIfExists = removeIfExists
@@ -25,7 +26,7 @@ local cos            = math.cos
 local abs            = math.abs
 local Path           = mimas.Path
 local EmptyBrush     = mimas.EmptyBrush
-
+local print = print
 
 --constantes de selection et de drag, servant a deplacer les vertex du flubber
 local Selection_Dist = 15
@@ -319,15 +320,18 @@ function computeCtrlPoint(self, a, b)
   end
   local theta = (b_t + a_t)/2
   if b_t - a_t > pi then
-    ctrl_vect = Vector{cos(theta-pi/2), sin(theta-pi/2)}
+    --theta = theta - pi/2
+    ctrl_vect = Vector{cos(theta-pi), sin(theta-pi)}
   else
+    --theta = theta + pi/2
     ctrl_vect = Vector{cos(theta), sin(theta)}
   end
   --calcul effectif du point de controle
-  local prout = b.source_vertex.position-a.source_vertex.position
-  local d = (prout:norm()*(pi-theta))/2
-  --local d = self.Stable_Distance * 0.5
-  return ctrl_vect*(-d)
+  --ctrl_vect = Vector{cos(theta-pi/2), sin(theta-pi/2)}
+  local edge_vect = b.source_vertex.position-a.source_vertex.position
+  --local d = (edge_vect:norm())/2*cos(theta)
+  local d = dot(ctrl_vect, edge_vect)/2
+  return ctrl_vect*abs(d)
 end --computeCtrlPoint]]
 
 --===================================================================================================================
@@ -379,8 +383,9 @@ end --qtDrawShape]]
 
 --===================================================================================================================
 --dessine le Flubber a partir des listes de Vertices et d'Edges sur la composante graphique fournie en parametre.
---le parametre withForces permet d'afficher les forces sur chaque Vertex, disponible pour des raisons de 
---debug/esthetique (version QT)
+--les parametres with_forces et with_ctrls permet d'afficher les forces sur chaque Vertex, disponible pour des 
+--raisons de debug/esthetique (version QT)
+--remarques: - with_ctrls ne marche que si with_shape est activé aussi
 --===================================================================================================================
 function qtDraw(self, p, with_points, with_forces, with_edges, with_shape, with_ctrls)
   local hue = self.hue
@@ -402,19 +407,21 @@ function qtDraw(self, p, with_points, with_forces, with_edges, with_shape, with_
     p:setPen(0.5, hue, 0.5, 0.5)
     p:drawPath(path)
   end
-  --dessin des vecteurs de controle des courbes de bezier
-  if with_ctrls then
-    p:setPen(0.9, hue)
-    p:setBrush(EmptyBrush)
-    p:drawPath(ctrls_path)
-  end
+
   --dessin du contour du flubber (avec remplissage)
   if with_shape then
     local shape_path, ctrls_path = qtDrawShape(self)
     p:setPen(4, hue)
     p:setBrush(hue, 1, 1, 0.3)
     p:drawPath(shape_path)
+    --dessin des vecteurs de controle des courbes de bezier
+    if with_ctrls then
+      p:setPen(0.9, hue)
+      p:setBrush(EmptyBrush)
+      p:drawPath(ctrls_path)
+    end
   end
+  
 end --qtDraw]]
 
 --===================================================================================================================
