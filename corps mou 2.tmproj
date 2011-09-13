@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>Edge.lua</string>
+	<string>Flubber_test.lua</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -16,9 +16,7 @@
 			<key>filename</key>
 			<string>Edge.lua</string>
 			<key>lastUsed</key>
-			<date>2011-09-12T17:48:30Z</date>
-			<key>selected</key>
-			<true/>
+			<date>2011-09-12T18:06:14Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -60,7 +58,9 @@
 			<key>filename</key>
 			<string>Flubber_test.lua</string>
 			<key>lastUsed</key>
-			<date>2011-09-12T17:46:12Z</date>
+			<date>2011-09-12T18:06:14Z</date>
+			<key>selected</key>
+			<true/>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -144,14 +144,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>18</integer>
+				<integer>9</integer>
 				<key>line</key>
 				<integer>85</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>0</integer>
+			<integer>69</integer>
 		</dict>
 		<key>Segment.lua</key>
 		<dict>

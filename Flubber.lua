@@ -298,25 +298,37 @@ function qtDrawForces(self)
 end --qtDrawForces]]
 
 --===================================================================================================================
+--calcule la distance au point de controle d'une courbe de bezier en fonction de l'angle entre les vecteurs du contour
+--===================================================================================================================
+function computeCtrlDistance(ctrl_vect, half_a_norm, angle)
+  return 1
+end --computeCtrlDistance]]
+
+
+
+--===================================================================================================================
 --calcule et renvoie le point de controle de la courbe de bezier pour le point b (a est le point precedent)
 --===================================================================================================================
 function computeCtrlPoint(self, a, b)
   local a_t = a.theta
   local b_t = b.theta
+  local ctrl_vect
   --uniformisation des angles. evite d'avoir des points de controle inverses
   if b_t < a_t then
     b_t = b_t + 2*pi
   end
   local theta = (b_t + a_t)/2
   if b_t - a_t > pi then
-    theta = theta - pi/2
+    ctrl_vect = Vector{cos(theta-pi/2), sin(theta-pi/2)}
   else
-    theta = theta + pi/2
+    ctrl_vect = Vector{cos(theta), sin(theta)}
   end
   --calcul effectif du point de controle
-  local d = self.Stable_Distance * 0.5
-  return Vector{d * cos(theta-pi/2), d * sin(theta-pi/2)}
-end
+  local prout = b.source_vertex.position-a.source_vertex.position
+  local d = (prout:norm()*(pi-theta))/2
+  --local d = self.Stable_Distance * 0.5
+  return ctrl_vect*(-d)
+end --computeCtrlPoint]]
 
 --===================================================================================================================
 --cree le chemin de dessin de la coque externe du flubber (version QT)

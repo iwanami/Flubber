@@ -83,7 +83,7 @@ function win.paint(p, w, h)
   
   --calcul des liens entre les points
   flub:update()
-  flub:qtWoodstockDraw(p, 
+  flub:qtDraw(p, 
     false, -- points
     false, -- force
     true, -- edges
